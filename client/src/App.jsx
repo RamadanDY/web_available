@@ -29,8 +29,8 @@ function App() {
             element={
               <>
                 <Navbar />
-                <BlockA />
-              </> 
+                <BlockA blockName="BlockA" />
+               </> 
             } 
           />   
           <Route 

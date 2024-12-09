@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
- import { FaRegBuilding } from "react-icons/fa";
+import { FaRegBuilding } from "react-icons/fa";
 import { MdOutlineDoorSliding } from "react-icons/md";
+import { ImSpinner8 } from "react-icons/im"; // Add spinner icon
 import "../App.css";
-import axios from "axios"
+import axios from "axios";
 
 const BlockA = ({ blockName }) => {
   const [blockData, setBlockData] = useState(null);
@@ -13,7 +14,7 @@ const BlockA = ({ blockName }) => {
     const fetchBlockData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/blocks/${BlockA}`
+          `http://localhost:5000/api/blocks/${blockName}`
         );
         setBlockData(response.data);
       } catch (err) {
@@ -29,7 +30,12 @@ const BlockA = ({ blockName }) => {
   }
 
   if (!blockData) {
-    return <div className="loading">Loading...</div>;
+    return (
+      <div className="loading flex justify-center items-center h-screen">
+        <ImSpinner8 className="animate-spin text-indigo-500" size={50} />
+        <p className="pl-4 text-indigo-500 text-lg font-medium">Loading...</p>
+      </div>
+    );
   }
 
   return (
