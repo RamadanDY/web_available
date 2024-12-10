@@ -39,7 +39,7 @@ const BlockA = ({ blockName }) => {
     return (
       <div className="loading flex justify-center items-center h-screen">
         <ImSpinner8 className="animate-spin text-indigo-500" size={50} />
-        <p className="pl-4 text-indigo-500 text-lg font-medium">Loading...</p>
+        <p className="pl-4 text-indigo-500 text-lg font-medium">Loading..</p>
       </div>
     );
   }

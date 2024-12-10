@@ -7,7 +7,7 @@ const Confirm = () => {
     <>
     <div className="confirm flex flex-col justify-center items-center pb-28 ">
         <div className="text-wrapper pb-36 text-5xl  ">
-            <p>would u like to select <span className='font-extrabold'> Block F  </span>     <span className=' flex justify-center ' >  <div className="num flex justify-center font-semibold pr-5 "><br /> 201 </div> for Your lecture?</span> </p>
+            <p>would u like to select  <span className='font-extrabold'> Block F  </span>     <span className=' flex justify-center ' >  <div className="num flex justify-center font-semibold pr-5 "><br /> 201 </div> for Your lecture?</span> </p>
         </div>
         <div className="classes1  transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110   duration-300 border-red-800 gap-4 rounded-2xl flex flex-col justify-between border px-14 py-4 w-fit m-2 text-center relative">
           {/* Top Section: Icon and Text */}
