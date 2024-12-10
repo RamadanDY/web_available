@@ -4,7 +4,7 @@ import { MdOutlineDoorSliding } from "react-icons/md";
 import { ImSpinner8 } from "react-icons/im"; // Add spinner icon
 import "../App.css";
 import axios from "axios";
-import { Navigate, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 
 const BlockA = ({ blockName }) => {
   const [blockData, setBlockData] = useState(null);
