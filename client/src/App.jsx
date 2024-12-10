@@ -30,6 +30,7 @@ function App() {
               <>
                 <Navbar />
                 <BlockA blockName="BlockA" />
+
                </> 
             } 
           />   
