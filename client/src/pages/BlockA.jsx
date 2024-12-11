@@ -32,7 +32,7 @@ const BlockA = ({ blockName }) => {
   })
 
   if (error) {
-    return <div className="error">Error: {error}</div>;
+    return <div className="error">Er: {error}</div>;
   }
 
   if (!blockData) {
