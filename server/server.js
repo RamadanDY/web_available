@@ -27,7 +27,7 @@ const BlockSchema = new mongoose.Schema({
 const Block = mongoose.models.Block || mongoose.model("Block", BlockSchema);
 
 // Routes
-app.get("/", (req, res) => res.send("API is running..."));
+app.get("/", (req, res) => res.send("API is running... correctly "));
 
 // API Endpoint to Get Block Data
 app.get("/api/blocks/:blockName", async (req, res) => {
