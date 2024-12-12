@@ -38,7 +38,11 @@ app.get("/api/blocks/:blockName", async (req, res) => {
     const block = await Block.findOne({ blockName });
 
     if (!block) {
-      return res.status(404).json({ error: "Block not found" });
+      return res
+        .status(404)
+        .json({
+          error: "Block not found or could not h=be retrived from the DBS",
+        });
     }
 
     res.status(200).json(block);
