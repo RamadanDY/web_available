@@ -39,7 +39,7 @@ function App() {
             element={
               <>
                 <Navbar />
-                <BlockB />
+                <BlockB blockName="BlockB"  />
               </> 
             } 
           />   

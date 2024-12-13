@@ -45,7 +45,7 @@ const BlockA = ({ blockName }) => {
   }
 
   return (
-    <div className="pages-blocka pb-96 flex flex-col justify-center items-center">
+    <div className="pages-blocka pb-60 flex flex-col justify-center items-center">
       {/* this is to display the Block Header */}
       <div className="blockA transition ease-in-out delay-150 mb-24 hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300 border-red-800 gap-4 rounded-2xl items-center flex flex-row border p-6 w-fit m-2 text-center">
         <FaRegBuilding size={25} />
@@ -53,7 +53,7 @@ const BlockA = ({ blockName }) => {
       </div>
 
       {/*this is to display the  Classes Section */}
-      <div onClick={ () => {  "/confirm" }} className="classes-wrapper flex flex-row">
+      <div onClick={ () => {  "/confirm" }} className="classes-wrapper flex flex-wrap justify-center gap-6">
         {blockData.classes.map((classItem) => (
           <div
             key={classItem.classId}

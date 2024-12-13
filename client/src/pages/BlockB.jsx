@@ -1,9 +1,20 @@
 import React from 'react';
 import { FaRegBuilding } from "react-icons/fa";
 import { MdOutlineDoorSliding } from "react-icons/md";
+import { useEffect } from 'react';
 import "../App.css";
 
-const BlockB = () => {
+const BlockB = ({blockName}) => {
+
+
+  // lets now fetch the data from the backend
+  useEffect(() => {
+  
+  }, [blockName])
+
+
+
+
   return (
     <div className="pages-blocka pb-96 flex flex-col justify-center items-center">
       <div className="blockA transition ease-in-out delay-150 mb-24 hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300 border-red-800 gap-4 rounded-2xl items-center flex flex-row border p-6 w-fit m-2 text-center">
