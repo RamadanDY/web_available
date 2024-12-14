@@ -80,8 +80,8 @@ function App() {
             } 
           />   
           <Route  
-            path="/confirm"
-            element={
+            path="/confirm/:classId"
+             element={
               <>
                 <Navbar />
                 <Confirm />

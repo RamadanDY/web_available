@@ -27,9 +27,10 @@ const BlockA = ({ blockName }) => {
     fetchBlockData();
   }, [blockName]);
 
-  const handleClassClick = ((classId) => {
-    navigate(`/confirm/${classId}`)
-  })
+  const handleClassClick = (classItem) => {
+    navigate(`/confirm/${classItem.classId}`, { state: classItem });
+  };
+  
 
   if (error) {
     return <div className="error">Error: {error}</div>;
@@ -52,23 +53,19 @@ const BlockA = ({ blockName }) => {
         <p className="text">{blockData.blockName}</p>
       </div>
 
-      {/*this is to display the  Classes Section */}
-      <div onClick={ () => {  "/confirm" }} className="classes-wrapper flex flex-wrap justify-center gap-6">
+      <div className="classes-wrapper flex flex-wrap justify-center gap-6">
         {blockData.classes.map((classItem) => (
           <div
             key={classItem.classId}
             className="classes1 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 border-red-800 gap-4 rounded-2xl flex flex-col justify-between border px-14 py-4 w-fit m-2 text-center relative"
-            // i pass the classi
-            onClick={() => {
-              handleClassClick(classItem.classId)
-            }}
+            onClick={() => handleClassClick(classItem)}
           >
-             <div className="name flex flex-row items-center h-2/3">
+            <div className="name flex flex-row items-center h-2/3">
               <MdOutlineDoorSliding size={25} />
               <p className="pl-6">{classItem.classId}</p>
-             </div>
+            </div>
 
-             <span
+            <span
               className={`inline-flex items-center ${
                 classItem.status === "available"
                   ? "bg-green-100 text-green-800"
@@ -85,6 +82,8 @@ const BlockA = ({ blockName }) => {
           </div>
         ))}
       </div>
+
+      
     </div>
   );
 };
