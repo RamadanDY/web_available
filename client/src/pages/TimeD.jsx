@@ -106,6 +106,9 @@ const TimeD = () => {
            </div>
         )}
       </div>
+      <div className="set">
+        <button className="button bg-orange-600">Set</button>
+       </div>
     </form>
   );
 };

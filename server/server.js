@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
+import timeRoutes from "./models/TimeD.js"; // Import the router
 
 dotenv.config();
 const app = express();
@@ -26,32 +27,32 @@ const BlockSchema = new mongoose.Schema({
 
 const Block = mongoose.models.Block || mongoose.model("Block", BlockSchema);
 
+// Use the timeRoutes as middleware for /api/time
+app.use("/api/time", timeRoutes); // This will use the router correctly
+
 // Routes
 app.get("/", (req, res) => res.send("API is running... correctly "));
 
 // API Endpoint to Get Block Data
 app.get("/api/blocks/:blockName", async (req, res) => {
-  const { blockName } = req.params; // Extract the blockName parameter from the URL
+  const { blockName } = req.params;
 
   try {
-    // Use Mongoose to fetch the block
+    // Fetch the block data from MongoDB
     const block = await Block.findOne({ blockName });
 
     if (!block) {
-      return res.status(404).json({
-        error: "Block not found or could not be retrived from the DBS",
-      });
+      return res.status(404).json({ error: "Block not found" });
     }
 
     res.status(200).json(block);
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ error: "Internal server error or api isnt working correctly" });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
+// Start the server
 app.listen(PORT, () =>
   console.log(`Server running on http://localhost:${PORT}`)
 );
