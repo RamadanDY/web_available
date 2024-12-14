@@ -21,7 +21,7 @@ const BlockA = ({ blockName }) => {
         setBlockData(response.data);
       } catch (err) {
         setError(err.response?.data?.error || "Error fetching data");
-      }
+       }
     };
 
     fetchBlockData();

@@ -1,18 +1,54 @@
 import React from 'react';
 import { FaRegBuilding } from "react-icons/fa";
 import { MdOutlineDoorSliding } from "react-icons/md";
-import { useEffect } from 'react';
+import { useEffect,useState } from 'react';
+import { ImSpinner8 } from "react-icons/im"; // Add spinner icon
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import "../App.css";
 
 const BlockB = ({blockName}) => {
+  const [blockdata ,setBlockdata] = useState(null)
+  const [error ,setError] = useState(null)
+  const navigate = useNavigate()
+
 
 
   // lets now fetch the data from the backend
   useEffect(() => {
+    const fetchBlockData = async () => {
+      try{
+       const response = await  axios.get(`ttp://localhost:5000/api/blocks/${blockName}`)
+       setBlockdata(response.data)
+
+      }catch (err) {
+        setError(err.response?.data?.error || "Error fetching data");
+
+      }
+
+    }
+    fetchBlockData()
   
   }, [blockName])
 
+  if(error) {
+    return (
+      <div className="error bg-red-100">
+        <p>Error: ${error}</p>
+      </div>
+    )
+  }
 
+  if(!blockdata) {
+    return(
+    <div className="loading">
+      <div className="loading-wrapper">
+        <ImSpinner8 />
+        <p className="text">Loading......</p>
+      </div>
+    </div>
+    )
+  }
 
 
   return (
