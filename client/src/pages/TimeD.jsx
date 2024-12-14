@@ -1,18 +1,24 @@
 import React, { useState, useEffect } from "react";
 
 const TimeD = () => {
-  const [startTime, setStartTime] = useState("09:00");
-  const [endTime, setEndTime] = useState("09:00");
+  const [startTime, setStartTime] = useState("07:00 AM");
+  const [endTime, setEndTime] = useState("07:00 AM");
   const [duration, setDuration] = useState(null);
 
   // Function to calculate the duration
   const calculateDuration = (start, end) => {
-    // Convert time (HH:mm) to minutes
-    const startParts = start.split(":");
-    const endParts = end.split(":");
+    // Convert time (HH:mm AM/PM) to minutes
+    const convertToMinutes = (time) => {
+      const [timeStr, modifier] = time.split(" ");
+      const [hours, minutes] = timeStr.split(":").map(Number);
+      let totalMinutes = hours * 60 + minutes;
+      if (modifier === "PM" && hours !== 12) totalMinutes += 12 * 60;
+      if (modifier === "AM" && hours === 12) totalMinutes -= 12 * 60;
+      return totalMinutes;
+    };
 
-    const startMinutes = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
-    const endMinutes = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
+    const startMinutes = convertToMinutes(start);
+    const endMinutes = convertToMinutes(end);
 
     // Calculate difference
     let diffMinutes = endMinutes - startMinutes;
@@ -34,14 +40,16 @@ const TimeD = () => {
     calculateDuration(startTime, endTime);
   }, [startTime, endTime]);
 
-  // Array of time options for dropdown (from 00:00 to 23:59)
+  // Array of time options from 7:00 AM to 6:00 PM (in 30-minute intervals)
   const generateTimeOptions = () => {
     const options = [];
-    for (let h = 0; h < 24; h++) {
+    for (let h = 7; h < 19; h++) {
       for (let m = 0; m < 60; m += 30) {
-        const hour = String(h).padStart(2, "0");
+        const hour = h > 12 ? h - 12 : h;
         const minute = String(m).padStart(2, "0");
-        options.push(`${hour}:${minute}`);
+        const period = h >= 12 ? "PM" : "AM";
+        const formattedTime = `${String(hour).padStart(2, "0")}:${minute} ${period}`;
+        options.push(formattedTime);
       }
     }
     return options;
@@ -95,7 +103,7 @@ const TimeD = () => {
         {duration && (
           <div className="mt-4 text-lg font-medium">
             <p>Duration: {duration}</p>
-          </div>
+           </div>
         )}
       </div>
     </form>
