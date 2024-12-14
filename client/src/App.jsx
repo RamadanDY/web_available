@@ -9,6 +9,7 @@ import Body from './pages/Body';
  import BlockE from './pages/BlockE';
  import BlockF from './pages/BlockF';
  import Confirm from "./pages/Confirm"
+import TimeD from './pages/TimeD';
  
 function App() {
   return (
@@ -85,6 +86,15 @@ function App() {
               <>
                 <Navbar />
                 <Confirm />
+              </>
+            } 
+          />
+          <Route  
+            path="/timeduration"
+             element={
+              <>
+                <Navbar />
+                <TimeD />
               </>
             } 
           />
