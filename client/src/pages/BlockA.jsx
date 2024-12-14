@@ -66,7 +66,7 @@ const BlockA = ({ blockName }) => {
              <div className="name flex flex-row items-center h-2/3">
               <MdOutlineDoorSliding size={25} />
               <p className="pl-6">{classItem.classId}</p>
-            </div>
+             </div>
 
              <span
               className={`inline-flex items-center ${

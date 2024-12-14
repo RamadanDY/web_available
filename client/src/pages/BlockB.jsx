@@ -60,12 +60,30 @@ const BlockB = ({blockName}) => {
 
       {/* now lets display the class sections by dynamically rendering it*/}
 
-      <div className="diplay-wrapper">
-        <div onClick={() => navigate('/confirm')} className="render">
+         <div onClick={() => navigate('/confirm')} className="classes-wrapper flex flex-wrap justify-center gap-6">
           {blockdata.classes.map((classItem) => (
-            <div className="class">
-              {classItem.classId}
-            </div>
+            <div  
+            key={classItem.classId} 
+            className="classes1 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 border-red-800 gap-4 rounded-2xl flex flex-col justify-between border px-14 py-4 w-fit m-2 text-center relative"
+            >
+              <div className="name">
+                {classItem.classId}
+              </div>
+              <span
+              className={`inline-flex items-center ${
+                classItem.status === "available"
+                  ? "bg-green-100 text-green-800"
+                  : "bg-red-100 text-red-800"
+              } text-xs font-medium px-2.5 py-0.5 rounded-full`}
+            >
+              <span
+                className={`w-2 h-2 me-1 rounded-full ${
+                  classItem.status === "available" ? "bg-green-500" : "bg-red-500"
+                }`}
+              ></span>
+              {classItem.status}
+            </span>
+             </div>
 
           ))}
         </div>
@@ -75,8 +93,7 @@ const BlockB = ({blockName}) => {
 
 
        
-    </div>
-  );
+   );
 };
 
 export default BlockB;
