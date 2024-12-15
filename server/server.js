@@ -2,9 +2,14 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-import timeRoutes from "./models/TimeD.js"; // Import the router
 
+// Import routes
+import blockRoutes from "./routes/getBlocks.js";
+import timeroutes from "./routes/timeRoutes.js";
+
+// Initialize environment variables
 dotenv.config();
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -18,39 +23,12 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Error connecting to MongoDB server:", err));
 
-// Check if the Block model is already defined to prevent overwriting
-const BlockSchema = new mongoose.Schema({
-  blockId: String,
-  blockName: String,
-  classes: Array,
-});
-
-const Block = mongoose.models.Block || mongoose.model("Block", BlockSchema);
-
-// Use the timeRoutes as middleware for /api/time
-app.use("/api/time", timeRoutes); // This will use the router correctly
-
 // Routes
-app.get("/", (req, res) => res.send("API is running... correctly "));
+app.use("/api/blocks", blockRoutes); // Block-related routes
+app.use("/api/time", timeroutes); // Time-related routes
 
-// API Endpoint to Get Block Data
-app.get("/api/blocks/:blockName", async (req, res) => {
-  const { blockName } = req.params;
-
-  try {
-    // Fetch the block data from MongoDB
-    const block = await Block.findOne({ blockName });
-
-    if (!block) {
-      return res.status(404).json({ error: "Block not found" });
-    }
-
-    res.status(200).json(block);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+// Default Route
+app.get("/", (req, res) => res.send("API is running..."));
 
 // Start the server
 app.listen(PORT, () =>
