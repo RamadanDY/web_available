@@ -64,6 +64,9 @@ const BlockA = ({ blockName }) => {
               <MdOutlineDoorSliding size={25} />
               <p className="pl-6">{classItem.classId}</p>
             </div>
+            <div className="duration">
+              <p className="dur bg-pink-500">{classItem.duration}</p>
+            </div>
 
             <span
               className={`inline-flex items-center ${

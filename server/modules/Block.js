@@ -10,6 +10,7 @@ const BlockSchema = new mongoose.Schema({
       startTime: String,
       endTime: String,
       lastUpdated: Date,
+      duration: String,
     },
   ],
 });
