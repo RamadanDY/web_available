@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
 const TimeD = () => {
   const [startTime, setStartTime] = useState("07:00 AM");
   const [endTime, setEndTime] = useState("07:00 AM");
   const [duration, setDuration] = useState(null);
-  const [isSaving, setIsSaving] = useState(false); // Loading state for save operation
+  const [isSaving, setIsSaving] = useState(false);
   const navigate = useNavigate();
+  const { blockId, classId } = useParams(); // Retrieve classId from the URL
 
   // Function to calculate the duration
   const calculateDuration = (start, end) => {
@@ -54,38 +56,40 @@ const TimeD = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    setIsSaving(true); // Show loading state
+    setIsSaving(true);
 
     try {
       const response = await axios.post("http://localhost:5000/api/time/save-time", {
         startTime,
         endTime,
         duration,
-        userId: "12345", // Replace with dynamic user ID if available
-        blockId: "BlockA", // Replace with dynamic block ID
+        userId: classId, // Pass the classId directly
+        blockId: blockId, // Replace with dynamic block ID if needed
       });
+      console.log("Payload being sent to the server:", payload); // Debug the payload
+
 
       if (response.status === 200) {
         console.log("Duration saved successfully:", response.data);
-        navigate("/success-page", { state: { duration } }); // Navigate to the success page
-      }
+        navigate("/success-page", { state: { duration } });
+      }s
     } catch (error) {
-      console.error("Error saving duration:", error);
+      console.error("Error saving duration:", error.response?.data || error.message);
       alert("Failed to save duration. Please try again.");
     } finally {
-      setIsSaving(false); // Reset loading state
+      setIsSaving(false);
     }
   };
 
   return (
     <form onSubmit={handleSave} className="max-w-[16rem] mx-auto grid grid-cols-2 gap-4">
       <div>
-        <label htmlFor="start-time" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+        <label htmlFor="start-time" className="block mb-2 text-sm font-medium">
           Start time:
         </label>
         <select
           id="start-time"
-          className="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          className="bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5"
           value={startTime}
           onChange={(e) => setStartTime(e.target.value)}
           required
@@ -98,12 +102,12 @@ const TimeD = () => {
         </select>
       </div>
       <div>
-        <label htmlFor="end-time" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+        <label htmlFor="end-time" className="block mb-2 text-sm font-medium">
           End time:
         </label>
         <select
           id="end-time"
-          className="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          className="bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5"
           value={endTime}
           onChange={(e) => setEndTime(e.target.value)}
           required
@@ -115,7 +119,7 @@ const TimeD = () => {
           ))}
         </select>
       </div>
-      <div className="col-span-2 mt-4 bg-red-500 text-white p-4 rounded-md">
+      <div className="col-span-2 mt-4">
         {duration && <p className="text-lg font-medium">Duration: {duration}</p>}
       </div>
       <div className="col-span-2 flex justify-center mt-4">
