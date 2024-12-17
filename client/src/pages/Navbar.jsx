@@ -8,10 +8,7 @@ import { IoIosLogOut } from "react-icons/io";
 import logo from '../assets/culogo.png'
 import { Link } from 'react-router-dom';
 
-
-
-
-
+ 
 
 const Navbar = () => {
   return (

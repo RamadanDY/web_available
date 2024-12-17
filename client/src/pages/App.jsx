@@ -1,15 +1,15 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './pages/Navbar';
-import Body from './pages/Body';
- import BlockA from './pages/BlockA';
- import BlockB from './pages/BlockB';
- import BlockC from './pages/BlockC';
- import BlockD from './pages/BlockD';
- import BlockE from './pages/BlockE';
- import BlockF from './pages/BlockF';
- import Confirm from "./pages/Confirm"
-import TimeD from './pages/TimeD';
+import Navbar from './Navbar';
+import Body from './Body';
+ import BlockA from './BlockA';
+ import BlockB from './BlockB';
+ import BlockC from './BlockC';
+ import BlockD from './BlockD';
+ import BlockE from './BlockE';
+ import BlockF from './BlockF';
+ import Confirm from "./Confirm"
+import TimeD from './TimeD';
  
 function App() {
   return (
