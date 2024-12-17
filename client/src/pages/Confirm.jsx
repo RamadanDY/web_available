@@ -26,7 +26,7 @@ const Confirm = () => {
                 <br />
                 {classData?.classId || classId}
               </div>{" "}
-              for Your lecture?
+              for Your lecture
             </span>
           </p>
         </div>
