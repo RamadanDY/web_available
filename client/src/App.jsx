@@ -92,7 +92,7 @@ function App() {
             } 
           />
           <Route  
-            path="/timeduration"
+            path="/timeduration/:blockId/:classId"
              element={
               <>
                 <Navbar />

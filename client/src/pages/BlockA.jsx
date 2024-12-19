@@ -14,7 +14,7 @@ const BlockA = ({ blockName }) => {
 
   // Initialize WebSocket connection
   useEffect(() => {
-    const socket = io("http://localhost:5000"); // Replace with your backend URL
+    const socket = io("http://localhost:5000/api/time/update/time"); // Replace with your backend URL
 
     // Listen for 'classStatusUpdated' event from the backend
     socket.on("classStatusUpdated", (update) => {

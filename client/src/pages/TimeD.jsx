@@ -59,7 +59,7 @@ const TimeD = () => {
     setIsSaving(true);
 
     try {
-      const response = await axios.post("http://localhost:5000/api/time/save-time", {
+      const response = await axios.put("http://localhost:5000/api/time/update/time ", {
         startTime,
         endTime,
         duration,
@@ -67,6 +67,8 @@ const TimeD = () => {
         blockId: blockId, // Replace with dynamic block ID if needed
       });
       console.log("Payload being sent to the server:", payload); // Debug the payload
+       
+      console.log("blockId:", blockId);
 
 
       if (response.status === 200) {

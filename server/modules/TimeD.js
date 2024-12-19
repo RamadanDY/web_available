@@ -9,8 +9,8 @@ const TimeDSchema = new mongoose.Schema({
       status: String,
       startTime: String,
       endTime: String,
-      lastUpdated: Date,
       duration: String,
+      lastUpdated: Date,
     },
   ],
 });
@@ -18,4 +18,3 @@ const TimeDSchema = new mongoose.Schema({
 const TimeD = mongoose.models.TimeD || mongoose.model("TimeD", TimeDSchema);
 
 export default TimeD;
-// Include duration if sent
