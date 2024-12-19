@@ -56,7 +56,7 @@ const BlockD = () => {
           {/* Top Section: Icon and Text */}
           <div className="name flex flex-row items-center h-2/3">
             <MdOutlineDoorSliding size={25} />
-            <p className="pl-6">D 102</p>
+            <p className="pl-6">D 10</p>
           </div>
           {/* Bottom Section: Red Background */}
 
