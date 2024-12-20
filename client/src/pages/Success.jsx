@@ -70,9 +70,10 @@ const TimeD = () => {
       blockId: blockId, // Replace with dynamic block ID if needed
     };
 
+    console.log("Payload being sent to the server:", payload); // Log the payload
+
     try {
       const response = await axios.put("http://localhost:5000/api/time/hello", payload);
-      console.log("Payload being sent to the server:", payload); // Debug the payload
       console.log("Server response:", response.data);
 
       if (response.status === 200) {
