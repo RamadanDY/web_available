@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
-import { useParams } from "react-router-dom";
 import { MdOutlineDoorSliding } from "react-icons/md";
 
 const TimeD = () => {
@@ -62,17 +61,19 @@ const TimeD = () => {
     e.preventDefault();
     setIsSaving(true);
 
+    const payload = {
+      startTime,
+      endTime,
+      duration,
+      userId: classId, // Pass the classId directly
+      blockId: blockId, // Replace with dynamic block ID if needed
+    };
+
+    console.log("Payload being sent to the server:", payload); // Log the payload
+
     try {
-      const response = await axios.put("http://localhost:5000/api/time/update/time", {
-        startTime,
-        endTime,
-        duration,
-        userId: classId, // Pass the classId directly
-        blockId: blockId, // Replace with dynamic block ID if needed
-      });
-      console.log("Payload being sent to the server:", payload); // Debug the payload
-       
-      console.log("blockId:", blockId);
+      const response = await axios.put("http://localhost:5000/api/time/update/time", payload);
+      console.log("Server response:", response.data);
 
       if (response.status === 200) {
         console.log("Duration saved successfully:", response.data);

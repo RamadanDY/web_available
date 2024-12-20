@@ -66,14 +66,14 @@ const TimeD = () => {
       startTime,
       endTime,
       duration,
-      userId: classId, // Pass the classId directly
-      blockId: blockId, // Replace with dynamic block ID if needed
+      blockId: blockId, // Pass the blockId directly
+      classId: classId, // Pass the classId directly
     };
 
     console.log("Payload being sent to the server:", payload); // Log the payload
 
     try {
-      const response = await axios.put("http://localhost:5000/api/time/hello", payload);
+      const response = await axios.put("http://localhost:5000/api/time/update/time", payload);
       console.log("Server response:", response.data);
 
       if (response.status === 200) {
