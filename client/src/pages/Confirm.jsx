@@ -10,8 +10,8 @@ const Confirm = () => {
   const navigate = useNavigate(); // Hook to navigate to a different page
 
   const handleYesClick = () => {
-    // Redirect to the 'timeD' page
-    navigate("/timeduration"); // Adjust the path if necessary based on your route structure
+    // Redirect to the 'timeD' page with block data
+    navigate(`/timeduration/${classData.blockId}/${classData.classId}`, { state: classData });
   };
 
   return (
