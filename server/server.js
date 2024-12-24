@@ -27,7 +27,7 @@ mongoose
 
 // Use routes
 app.use("/api/blocks", blockRoutes);
-app.use("/api/time", timeroutes);
+app.use("/api", timeroutes);
 
 // Create HTTP server and WebSocket server
 const server = http.createServer(app);
