@@ -99,7 +99,7 @@ const TimeD = () => {
             <MdOutlineDoorSliding size={25} />
             <p className="pl-6">{classData?.classId || "N/A"}</p>
           </div>
-          <p className="mt-2">Block Name: {classData?.blockId || "N/A"}</p>
+          <p className="mt-2 bg-red-300">Block Name: {classData?.blockId || "N/A"}</p>
           <p className="mt-2">Status: {classData?.status || "Unavailable"}</p>
         </div>
       </div>

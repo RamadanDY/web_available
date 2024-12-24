@@ -20,7 +20,7 @@ router.put("/update/time", async (req, res) => {
     console.log("Query:", query); // Log the query
 
     const block = await TimeD.findOne(query);
-    console.log("Block found:", block, error); // Log the found block
+    console.log("Block found:", block); // Log the found block
 
     if (!block) {
       return res.status(404).json({ message: "Block or class not found" });
@@ -43,6 +43,7 @@ router.put("/update/time", async (req, res) => {
 
     res.json(updatedBlock);
   } catch (error) {
+    console.error("Error updating block:", error); // Log the error
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
