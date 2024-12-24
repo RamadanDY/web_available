@@ -57,7 +57,7 @@ const BlockA = ({ blockName }) => {
   }, [blockName]);
 
   const handleClassClick = (classItem) => {
-    navigate(`/confirm/${classItem.classId}`, { state: classItem });
+    navigate(`/confirm/${classItem.classId}`, { state: { ...classItem, blockId: blockData.blockId } });
   };
 
   if (error) {

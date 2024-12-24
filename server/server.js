@@ -25,59 +25,26 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Error connecting to MongoDB server:", err));
 
-// Routes
-app.use("/api/blocks", blockRoutes); // Block-related routes
-app.use("/api/time", timeroutes); // Time-related routes
+// Use routes
+app.use("/api/blocks", blockRoutes);
+app.use("/api/time", timeroutes);
 
-// Default Route
-app.get("/", (req, res) => res.send("API is running..."));
-
-// Create HTTP server
+// Create HTTP server and WebSocket server
 const server = http.createServer(app);
-
-// Integrate Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // Replace with your frontend URL if necessary
-    methods: ["GET", "POST"],
+    origin: "*",
   },
 });
 
-// WebSocket logic
 io.on("connection", (socket) => {
-  console.log("New client connected:", socket.id);
+  console.log("New WebSocket connection");
 
-  // Example: Emitting a message to the client
-  socket.emit("serverMessage", "Welcome to the WebSocket server!");
-
-  // Example: Listening to client messages (optional)
-  socket.on("clientMessage", (message) => {
-    console.log("Message from client:", message);
-  });
-
-  // Emit a test event every 5 seconds (for testing)
-  setInterval(() => {
-    socket.emit("classStatusUpdated", {
-      classId: "test-class",
-      status: "available",
-    });
-  }, 5000);
-
-  // Handle client disconnection
   socket.on("disconnect", () => {
-    console.log("Client disconnected:", socket.id);
+    console.log("WebSocket disconnected");
   });
 });
 
-// Helper function to emit class status updates
-export const emitClassStatusUpdate = (classId, status) => {
-  io.emit("classStatusUpdated", { classId, status });
-  console.log(
-    `Class status updated: { classId: ${classId}, status: ${status} }`
-  );
-};
-
-// Start the server
-server.listen(PORT, () =>
-  console.log(`Server running on http://localhost:${PORT}`)
-);
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});

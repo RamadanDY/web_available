@@ -61,12 +61,15 @@ const TimeD = () => {
     e.preventDefault();
     setIsSaving(true);
 
+    console.log("blockId:", blockId); // Log blockId
+    console.log("classId:", classId); // Log classId
+
     const payload = {
       startTime,
       endTime,
       duration,
-      userId: classId, // Pass the classId directly
-      blockId: blockId, // Replace with dynamic block ID if needed
+      blockId: blockId, // Pass the blockId directly
+      classId: classId, // Pass the classId directly
     };
 
     console.log("Payload being sent to the server:", payload); // Log the payload
@@ -96,7 +99,7 @@ const TimeD = () => {
             <MdOutlineDoorSliding size={25} />
             <p className="pl-6">{classData?.classId || "N/A"}</p>
           </div>
-          <p className="mt-2">Block Name: {classData?.blockName || "N/A"}</p>
+          <p className="mt-2">Block Name: {classData?.blockId || "N/A"}</p>
           <p className="mt-2">Status: {classData?.status || "Unavailable"}</p>
         </div>
       </div>
