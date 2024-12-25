@@ -2,7 +2,6 @@ import express from "express";
 import Block from "../modules/Block.js";
 const router = express.Router();
 
-// Route to get block data
 router.get("/:blockName", async (req, res) => {
   const { blockName } = req.params;
 

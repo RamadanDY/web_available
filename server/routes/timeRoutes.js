@@ -1,21 +1,19 @@
 import express from "express";
-import TimeD from "../modules/TimeD.js"; // Ensure the correct path to the model
+import TimeD from "../modules/TimeD.js";
 
 const router = express.Router();
 
 router.put("/update/time", async (req, res) => {
   const { blockId, classId, startTime, endTime, duration } = req.body;
 
-  console.log("Received payload at the server side:", req.body); // Log the full payload
+  console.log("Received payload at the server side:", req.body);
 
-  // Log individual fields to check their values
   console.log("blockId:", blockId);
   console.log("classId:", classId);
   console.log("startTime:", startTime);
   console.log("duration:", duration);
   console.log("endTime:", endTime);
 
-  // Check for required fields
   if (!blockId || !classId || !startTime || !endTime || !duration) {
     console.error("Missing one or more required fields:");
     if (!blockId) console.error("blockId is missing or invalid.");
@@ -29,9 +27,8 @@ router.put("/update/time", async (req, res) => {
 
   try {
     const query = { blockId, "classes.classId": classId };
-    console.log("Query:", query); // Log the query
+    console.log("Query:", query);
 
-    // Find the block with the specified blockId and classId
     const block = await TimeD.findOne(query, { blockId: 1, "classes.$": 1 });
 
     if (!block) {
@@ -47,7 +44,6 @@ router.put("/update/time", async (req, res) => {
 
     console.log("Block found:", block);
 
-    // Update the specific class within the block
     const updatedBlock = await TimeD.findOneAndUpdate(
       query,
       {

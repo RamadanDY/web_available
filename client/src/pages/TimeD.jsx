@@ -5,8 +5,8 @@ import { MdOutlineDoorSliding } from "react-icons/md";
 
 const TimeD = () => {
   const location = useLocation();
-  const { blockId, classId } = useParams(); // Retrieve blockId and classId from the URL
-  const classData = location.state; // Access the passed class data
+  const { blockId, classId } = useParams();  
+  const classData = location.state;  
 
   const [startTime, setStartTime] = useState("07:00 AM");
   const [endTime, setEndTime] = useState("07:00 AM");
@@ -14,7 +14,7 @@ const TimeD = () => {
   const [isSaving, setIsSaving] = useState(false);
   const navigate = useNavigate();
 
-  // Function to calculate the duration
+   
   const calculateDuration = (start, end) => {
     const convertToMinutes = (time) => {
       const [timeStr, modifier] = time.split(" ");
@@ -60,18 +60,18 @@ const TimeD = () => {
     e.preventDefault();
     setIsSaving(true);
   
-    console.log("blockId:", blockId); // Log blockId
-    console.log("classId:", classId); // Log classId
+    console.log("blockId:", blockId);  
+    console.log("classId:", classId);  
   
     const payload = {
       startTime,
       endTime,
       duration,
-      blockId: blockId, // Pass the blockId directly
-      classId: classId, // Pass the classId directly
+      blockId: blockId,  
+      classId: classId,  
     };
   
-    console.log("Payload being sent to the server:", payload); // Log the payload
+    console.log("Payload being sent to the server:", payload); 
   
     try {
       const response = await axios.put("http://localhost:5000/api/time/update/time", payload);

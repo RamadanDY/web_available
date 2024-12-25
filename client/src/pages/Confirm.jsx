@@ -4,13 +4,13 @@ import { MdOutlineDoorSliding } from "react-icons/md";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 
 const Confirm = () => {
-  const location = useLocation(); // Retrieve data passed via state
-  const { classId } = useParams(); // Retrieve classId from the URL
-  const classData = location.state; // Access the full class data
-  const navigate = useNavigate(); // Hook to navigate to a different page
+  const location = useLocation();  
+  const { classId } = useParams();  
+  const classData = location.state;  
+  const navigate = useNavigate();  
 
   const handleYesClick = () => {
-    // Redirect to the 'timeD' page with block data
+     
     navigate(`/timeduration/${classData.blockId}/${classData.classId}`, { state: classData });
   };
 
@@ -31,12 +31,12 @@ const Confirm = () => {
           </p>
         </div>
         <div className="classes1 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 border-red-800 gap-4 rounded-2xl flex flex-col justify-between border px-14 py-4 w-fit m-2 text-center relative">
-          {/* Top Section: Icon and Text */}
+          
           <div className="name flex flex-row items-center h-2/3">
             <MdOutlineDoorSliding size={25} />
             <p className="pl-6">{classData?.classId || "N/A"}</p>
           </div>
-          {/* Bottom Section: Availability Status */}
+          
           <span
             className={`inline-flex items-center ${
               classData?.status === "available"
@@ -53,7 +53,7 @@ const Confirm = () => {
           </span>
         </div>
 
-        {/* Confirm and Cancel Buttons */}
+         
         <div className="btn-confirm flex flex-row gap-5">
           <div className="btn1 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 border-red-800 gap-4 rounded-2xl flex flex-col justify-between border px-14 py-4 w-fit m-2 text-center relative">
             <button type="button" onClick={handleYesClick}>Yes</button>

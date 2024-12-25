@@ -2,34 +2,28 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-import http from "http"; // To create an HTTP server
-import { Server } from "socket.io"; // For WebSocket functionality
+import http from "http";
+import { Server } from "socket.io";
 
-// Import routes
 import blockRoutes from "./routes/getBlocks.js";
 import timeRoutes from "./routes/timeRoutes.js";
 
-// Initialize environment variables
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// MongoDB Connection
 mongoose
   .connect(process.env.MONGO_URI, {})
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Error connecting to MongoDB server:", err));
 
-// Use routes
 app.use("/api/blocks", blockRoutes);
 app.use("/api/time", timeRoutes);
 
-// Create HTTP server and WebSocket server
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {

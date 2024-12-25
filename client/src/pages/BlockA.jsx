@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FaRegBuilding } from "react-icons/fa";
 import { MdOutlineDoorSliding } from "react-icons/md";
-import { ImSpinner8 } from "react-icons/im"; // Add spinner icon
+import { ImSpinner8 } from "react-icons/im";
 import "../App.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -11,21 +11,20 @@ const BlockA = ({ blockName }) => {
   const [blockData, setBlockData] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-
-  // Initialize WebSocket connection
+ 
   useEffect(() => {
-    const socket = io("http://localhost:5000/api/time/update/time"); // Replace with your backend URL
+    const socket = io("http://localhost:5000/api/time/update/time");  
 
-    // Listen for 'classStatusUpdated' event from the backend
+    
     socket.on("classStatusUpdated", (update) => {
       console.log("Real-time update received:", update);
       setBlockData((prevData) => {
-        if (!prevData) return prevData; // Handle case where data hasn't loaded yet
+        if (!prevData) return prevData;  
 
-        // Find the block that matches the update
+         
         const updatedClasses = prevData.classes.map((classItem) => {
           if (classItem.classId === update.classId) {
-            return { ...classItem, status: update.status }; // Update status
+            return { ...classItem, status: update.status };  
           }
           return classItem;
         });
@@ -34,13 +33,13 @@ const BlockA = ({ blockName }) => {
       });
     });
 
-    // Clean up the WebSocket connection
+     
     return () => {
       socket.disconnect();
     };
   }, []);
 
-  // Fetch block data from the backend
+  
   useEffect(() => {
     const fetchBlockData = async () => {
       try {
