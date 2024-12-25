@@ -7,7 +7,7 @@ import { Server } from "socket.io"; // For WebSocket functionality
 
 // Import routes
 import blockRoutes from "./routes/getBlocks.js";
-import timeroutes from "./routes/timeRoutes.js";
+import timeRoutes from "./routes/timeRoutes.js";
 
 // Initialize environment variables
 dotenv.config();
@@ -27,7 +27,7 @@ mongoose
 
 // Use routes
 app.use("/api/blocks", blockRoutes);
-app.use("/api", timeroutes);
+app.use("/api/time", timeRoutes);
 
 // Create HTTP server and WebSocket server
 const server = http.createServer(app);

@@ -56,14 +56,13 @@ const TimeD = () => {
     }
     return options;
   };
-
   const handleSave = async (e) => {
     e.preventDefault();
     setIsSaving(true);
-
+  
     console.log("blockId:", blockId); // Log blockId
     console.log("classId:", classId); // Log classId
-
+  
     const payload = {
       startTime,
       endTime,
@@ -71,13 +70,13 @@ const TimeD = () => {
       blockId: blockId, // Pass the blockId directly
       classId: classId, // Pass the classId directly
     };
-
+  
     console.log("Payload being sent to the server:", payload); // Log the payload
-
+  
     try {
       const response = await axios.put("http://localhost:5000/api/time/update/time", payload);
       console.log("Server response:", response.data);
-
+  
       if (response.status === 200) {
         console.log("Duration saved successfully:", response.data);
         navigate("/success-page", { state: { duration } });
@@ -89,7 +88,7 @@ const TimeD = () => {
       setIsSaving(false);
     }
   };
-
+  
   return (
     <div className="timed-container flex flex-col items-center">
       <div className="selected-block mb-8">
@@ -99,7 +98,7 @@ const TimeD = () => {
             <MdOutlineDoorSliding size={25} />
             <p className="pl-6">{classData?.classId || "N/A"}</p>
           </div>
-          <p className="mt-2 bg-red-300">Block Name: {classData?.blockId || "N/A"}</p>
+          <p className="mt-2 bg-red-500">Block Name: {classData?.blockId || "N/A"}</p>
           <p className="mt-2">Status: {classData?.status || "Unavailable"}</p>
         </div>
       </div>
