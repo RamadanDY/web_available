@@ -14,6 +14,11 @@ const BlockA = ({ blockName }) => {
 
   useEffect(() => {
     const socket = io("http://localhost:5000");
+    
+    socket.on("connect", () => {
+      console.log("Connected to WebSocket server");
+    });
+
 
     socket.on("classStatusUpdated", (update) => {
       console.log("Real-time update received:", update);

@@ -10,8 +10,8 @@ import Body from './pages/Body';
  import BlockE from './pages/BlockE';
  import BlockF from './pages/BlockF';
  import Confirm from "./pages/Confirm"
- import Success from "./pages/Success"
- import TimeD from './pages/TimeD';
+  import TimeD from './pages/TimeD';
+  import Completed from './pages/Completed';
 
 function App() {
   return (
@@ -101,12 +101,12 @@ function App() {
             } 
           />
           <Route  
-            path="/success"
+            path="/Completed"
              element={
               <>
                 <Navbar />
-                <Success />
-               </>
+                <Completed/>
+              </> 
             } 
           />
 

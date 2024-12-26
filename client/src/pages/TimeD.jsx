@@ -60,8 +60,8 @@ const TimeD = () => {
     e.preventDefault();
     setIsSaving(true);
   
-    console.log("blockId:", blockId);  
-    console.log("classId:", classId);  
+    // console.log("blockId:", blockId);  
+    // console.log("classId:", classId);  
   
     const payload = {
       startTime,
@@ -71,15 +71,15 @@ const TimeD = () => {
       classId: classId,  
     };
   
-    console.log("Payload being sent to the server:", payload); 
+    // console.log("Payload being sent to the server:", payload); 
   
     try {
       const response = await axios.put("http://localhost:5000/api/time/update/time", payload);
-      console.log("Server response:", response.data);
+      // console.log("Server response:", response.data);
   
       if (response.status === 200) {
-        console.log("Duration saved successfully:", response.data);
-        navigate("/success-page", { state: { duration } });
+        // console.log("Duration saved successfully:", response.data);
+        navigate("/Completed", { state: { duration } });
       }
     } catch (error) {
       console.error("Error saving duration:", error.response?.data || error.message);
