@@ -11,20 +11,18 @@ const BlockA = ({ blockName }) => {
   const [blockData, setBlockData] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
- 
-  useEffect(() => {
-    const socket = io("http://localhost:5000/api/time/update/time");  
 
-    
+  useEffect(() => {
+    const socket = io("http://localhost:5000");
+
     socket.on("classStatusUpdated", (update) => {
       console.log("Real-time update received:", update);
       setBlockData((prevData) => {
-        if (!prevData) return prevData;  
+        if (!prevData) return prevData;
 
-         
         const updatedClasses = prevData.classes.map((classItem) => {
           if (classItem.classId === update.classId) {
-            return { ...classItem, status: update.status };  
+            return { ...classItem, status: update.status };
           }
           return classItem;
         });
@@ -33,13 +31,11 @@ const BlockA = ({ blockName }) => {
       });
     });
 
-     
     return () => {
       socket.disconnect();
     };
   }, []);
 
-  
   useEffect(() => {
     const fetchBlockData = async () => {
       try {

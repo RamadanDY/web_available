@@ -21,6 +21,12 @@ const useWebSocket = () => {
       setClassUpdates((prevUpdates) => [...prevUpdates, data]);
     });
 
+    // Listen for 'dataSaved' events
+    socketInstance.on("dataSaved", (data) => {
+      console.log("Data saved event received:", data);
+      // Handle the data saved event (e.g., update state or UI)
+    });
+
     // Clean up the socket connection when the component unmounts
     return () => {
       socketInstance.disconnect();
