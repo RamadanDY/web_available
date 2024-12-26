@@ -1,5 +1,5 @@
 import express from "express";
-import TimeD from "../modules/TimeD.js";
+import Block from "../modules/Block.js"; // Adjust the import to use the merged Block model
 
 const router = express.Router();
 
@@ -29,7 +29,7 @@ router.put("/update/time", async (req, res) => {
     const query = { blockId, "classes.classId": classId };
     console.log("Query:", query);
 
-    const block = await TimeD.findOne(query, { blockId: 1, "classes.$": 1 });
+    const block = await Block.findOne(query, { blockId: 1, "classes.$": 1 });
 
     if (!block) {
       console.error(
@@ -44,7 +44,7 @@ router.put("/update/time", async (req, res) => {
 
     console.log("Block found:", block);
 
-    const updatedBlock = await TimeD.findOneAndUpdate(
+    const updatedBlock = await Block.findOneAndUpdate(
       query,
       {
         $set: {
