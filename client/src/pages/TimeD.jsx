@@ -5,16 +5,18 @@ import { MdOutlineDoorSliding } from "react-icons/md";
 
 const TimeD = () => {
   const location = useLocation();
-  const { blockId, classId } = useParams();  
-  const classData = location.state;  
+  const { blockId, classId } = useParams(); // Retrieve blockId and classId from the URL
+  const classData = location.state; // Access the passed class data
 
   const [startTime, setStartTime] = useState("07:00 AM");
   const [endTime, setEndTime] = useState("07:00 AM");
   const [duration, setDuration] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [remainingTime, setRemainingTime] = useState(0);
+  const [countdownStarted, setCountdownStarted] = useState(false);
   const navigate = useNavigate();
 
-   
+  // Function to calculate the duration
   const calculateDuration = (start, end) => {
     const convertToMinutes = (time) => {
       const [timeStr, modifier] = time.split(" ");
@@ -56,30 +58,58 @@ const TimeD = () => {
     }
     return options;
   };
+
+  const convertDurationToSeconds = (duration) => {
+    const [hours, minutes] = duration.split(" ").map((part) => parseInt(part));
+    return hours * 3600 + minutes * 60;
+  };
+
+  const calculateStartTime = (startTime) => {
+    const [timeStr, modifier] = startTime.split(" ");
+    const [hours, minutes] = timeStr.split(":").map(Number);
+    const date = new Date();
+    date.setHours(modifier === "PM" && hours !== 12 ? hours + 12 : hours);
+    date.setMinutes(minutes);
+    date.setSeconds(0);
+    return date;
+  };
+
   const handleSave = async (e) => {
     e.preventDefault();
     setIsSaving(true);
-  
-    // console.log("blockId:", blockId);  
-    // console.log("classId:", classId);  
-  
+
     const payload = {
       startTime,
       endTime,
       duration,
-      blockId: blockId,  
-      classId: classId,  
+      blockId: blockId, // Pass the blockId directly
+      classId: classId, // Pass the classId directly
     };
-  
-    // console.log("Payload being sent to the server:", payload); 
-  
+
     try {
       const response = await axios.put("http://localhost:5000/api/time/update/time", payload);
-      // console.log("Server response:", response.data);
-  
+
       if (response.status === 200) {
-        // console.log("Duration saved successfully:", response.data);
-        navigate("/Completed", { state: { duration } });
+        // Calculate total duration in seconds
+        const totalSeconds = convertDurationToSeconds(duration);
+
+        // Calculate start time and time until start
+        const startTimeDate = calculateStartTime(startTime);
+        const now = new Date();
+        const timeUntilStart = startTimeDate - now;
+
+        if (timeUntilStart > 0) {
+          setTimeout(() => {
+            setCountdownStarted(true);
+            setRemainingTime(totalSeconds);
+          }, timeUntilStart);
+        } else {
+          setCountdownStarted(true);
+          setRemainingTime(totalSeconds);
+        }
+
+        // Navigate to BlockA with countdown data
+        navigate("/blockA", { state: { totalSeconds, blockId, classId } });
       }
     } catch (error) {
       console.error("Error saving duration:", error.response?.data || error.message);
@@ -88,7 +118,31 @@ const TimeD = () => {
       setIsSaving(false);
     }
   };
-  
+
+  useEffect(() => {
+    if (countdownStarted && remainingTime > 0) {
+      const timer = setInterval(() => {
+        setRemainingTime((prevTime) => {
+          console.log("Remaining Time:", prevTime - 1); // Log the countdown to the console
+          if (prevTime <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prevTime - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [countdownStarted, remainingTime]);
+
+  const formatTime = (seconds) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hrs} hours ${mins} minutes ${secs} seconds`;
+  };
+
   return (
     <div className="timed-container flex flex-col items-center">
       <div className="selected-block mb-8">
@@ -153,6 +207,13 @@ const TimeD = () => {
           </button>
         </div>
       </form>
+
+      {/* Countdown Timer */}
+      {countdownStarted && remainingTime > 0 && (
+        <div className="countdown-timer mt-8">
+          <p className="text-lg font-medium">Time Remaining: {formatTime(remainingTime)}</p>
+        </div>
+      )}
     </div>
   );
 };
