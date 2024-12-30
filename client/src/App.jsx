@@ -12,6 +12,7 @@ import Body from './pages/Body';
  import Confirm from "./pages/Confirm"
   import TimeD from './pages/TimeD';
   import Completed from './pages/Completed';
+import CountdownTimer from './pages/CountdownTimer';
 
 function App() {
   return (
@@ -106,6 +107,15 @@ function App() {
               <>
                 <Navbar />
                 <Completed/>
+              </> 
+            } 
+          />
+          <Route  
+            path="/CountdownTimer"
+             element={
+              <>
+                <Navbar />
+                <CountdownTimer/>
               </> 
             } 
           />
