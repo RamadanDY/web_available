@@ -73,8 +73,8 @@ const TimeD = () => {
       const response = await axios.put("http://localhost:5000/api/time/update/time", payload);
 
       if (response.status === 200) {
-        // Navigate to BlockA with countdown data
-        navigate("/Completed", { state: { blockId, classId } });
+        // Navigate to Completed page with startTime, endTime, duration, and blockId
+        navigate("/Completed", { state: { startTime, endTime, duration, blockId } });
       }
     } catch (error) {
       console.error("Error saving duration:", error.response?.data || error.message);

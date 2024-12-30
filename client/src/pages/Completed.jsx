@@ -1,58 +1,32 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-const Completed = ({ message = "Action completed successfully!", onClose }) => {
-  const [visible, setVisible] = useState(true);
+const Completed = () => {
+  const location = useLocation();
   const navigate = useNavigate();
+  const { startTime, endTime, duration, blockId } = location.state || {};
 
-  const handleClose = () => {
-    setVisible(false);
-    if (onClose) onClose(); // Trigger any additional close logic passed as props
+  const handleGoBack = () => {
+    navigate('/');
   };
 
-  if (!visible) return null;
-
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded-md shadow-lg max-w-sm w-full">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 text-green-500 mr-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12l2 2l4-4m6 2a9 9 0 11-9-9 9 9 0 019 9z"
-              />
-            </svg>
-            <span className="font-medium text-green-700">{message}</span>
-          </div>
-          <button
-            onClick={handleClose}
-            className="text-green-500 hover:text-green-700 focus:outline-none"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
+    <div className="completed-container flex flex-col items-center min-h-screen bg-gray-100">
+      <div className="bg-white border border-gray-300 p-6 rounded-lg shadow-lg max-w-md w-full mt-12">
+        <h2 className="text-2xl font-bold text-center mb-4">Action Completed Successfully!</h2>
+        <div className="mb-4">
+          <p className="text-lg font-medium">Block ID: {blockId}</p>
+          <p className="text-lg font-medium">Start Time: {startTime}</p>
+          <p className="text-lg font-medium">End Time: {endTime}</p>
+          <p className="text-lg font-medium">Duration: {duration}</p>
         </div>
-        <div className="okay">
-          <button onClick={() => navigate("/")}>Go Back to Home</button>
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={handleGoBack}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg"
+          >
+            Go Back to Home
+          </button>
         </div>
       </div>
     </div>
