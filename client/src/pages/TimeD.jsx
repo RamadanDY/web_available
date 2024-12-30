@@ -12,8 +12,6 @@ const TimeD = () => {
   const [endTime, setEndTime] = useState("07:00 AM");
   const [duration, setDuration] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [remainingTime, setRemainingTime] = useState(0);
-  const [countdownStarted, setCountdownStarted] = useState(false);
   const navigate = useNavigate();
 
   // Function to calculate the duration
@@ -59,21 +57,6 @@ const TimeD = () => {
     return options;
   };
 
-  const convertDurationToSeconds = (duration) => {
-    const [hours, minutes] = duration.split(" ").map((part) => parseInt(part));
-    return hours * 3600 + minutes * 60;
-  };
-
-  const calculateStartTime = (startTime) => {
-    const [timeStr, modifier] = startTime.split(" ");
-    const [hours, minutes] = timeStr.split(":").map(Number);
-    const date = new Date();
-    date.setHours(modifier === "PM" && hours !== 12 ? hours + 12 : hours);
-    date.setMinutes(minutes);
-    date.setSeconds(0);
-    return date;
-  };
-
   const handleSave = async (e) => {
     e.preventDefault();
     setIsSaving(true);
@@ -90,26 +73,8 @@ const TimeD = () => {
       const response = await axios.put("http://localhost:5000/api/time/update/time", payload);
 
       if (response.status === 200) {
-        // Calculate total duration in seconds
-        const totalSeconds = convertDurationToSeconds(duration);
-
-        // Calculate start time and time until start
-        const startTimeDate = calculateStartTime(startTime);
-        const now = new Date();
-        const timeUntilStart = startTimeDate - now;
-
-        if (timeUntilStart > 0) {
-          setTimeout(() => {
-            setCountdownStarted(true);
-            setRemainingTime(totalSeconds);
-          }, timeUntilStart);
-        } else {
-          setCountdownStarted(true);
-          setRemainingTime(totalSeconds);
-        }
-
         // Navigate to BlockA with countdown data
-        navigate("/blockA", { state: { totalSeconds, blockId, classId } });
+        navigate("/Completed", { state: { blockId, classId } });
       }
     } catch (error) {
       console.error("Error saving duration:", error.response?.data || error.message);
@@ -117,30 +82,6 @@ const TimeD = () => {
     } finally {
       setIsSaving(false);
     }
-  };
-
-  useEffect(() => {
-    if (countdownStarted && remainingTime > 0) {
-      const timer = setInterval(() => {
-        setRemainingTime((prevTime) => {
-          console.log("Remaining Time:", prevTime - 1); // Log the countdown to the console
-          if (prevTime <= 1) {
-            clearInterval(timer);
-            return 0;
-          }
-          return prevTime - 1;
-        });
-      }, 1000);
-
-      return () => clearInterval(timer);
-    }
-  }, [countdownStarted, remainingTime]);
-
-  const formatTime = (seconds) => {
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${hrs} hours ${mins} minutes ${secs} seconds`;
   };
 
   return (
@@ -207,13 +148,6 @@ const TimeD = () => {
           </button>
         </div>
       </form>
-
-      {/* Countdown Timer */}
-      {countdownStarted && remainingTime > 0 && (
-        <div className="countdown-timer mt-8">
-          <p className="text-lg font-medium">Time Remaining: {formatTime(remainingTime)}</p>
-        </div>
-      )}
     </div>
   );
 };
