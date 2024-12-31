@@ -5,9 +5,9 @@ import dotenv from "dotenv";
 import http from "http";
 import { Server } from "socket.io";
 
+import countdownSocket from "./countdownSocket.js";
 import blockRoutes from "./routes/getBlocks.js";
 import timeRoutes from "./routes/timeRoutes.js";
-
 dotenv.config();
 
 const app = express();
@@ -31,13 +31,8 @@ const io = new Server(server, {
   },
 });
 
-io.on("connection", (socket) => {
-  console.log("New WebSocket connection");
-
-  socket.on("disconnect", () => {
-    console.log("WebSocket disconnected");
-  });
-});
+// Initialize countdownSocket with io
+countdownSocket(io);
 
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
