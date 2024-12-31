@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import { MdOutlineDoorSliding } from "react-icons/md";
@@ -88,30 +88,49 @@ const TimeD = () => {
     }
     return options;
   };
-
   const handleSave = async (e) => {
     e.preventDefault();
+    if (isSaving) return; // Prevent multiple save attempts
+  
     setIsSaving(true);
-
+  
+    // Determine the status based on the countdown
+    const now = new Date();
+    const convertToDate = (timeStr) => {
+      const [time, modifier] = timeStr.split(" ");
+      let [hours, minutes] = time.split(":").map(Number);
+      if (modifier === "PM" && hours < 12) hours += 12;
+      if (modifier === "AM" && hours === 12) hours -= 12;
+      const date = new Date();
+      date.setHours(hours, minutes, 0, 0);
+      return date;
+    };
+  
+    const endDate = convertToDate(endTime);
+    const updatedStatus = now >= endDate ? "available" : "unavailable";
+  
     const payload = {
       startTime,
       endTime,
       duration,
-      blockId: blockId, // Pass the blockId directly
-      classId: classId, // Pass the classId directly
+      blockId, // Pass blockId from URL
+      classId, // Pass classId from URL
+      status: updatedStatus, // Add dynamically determined status
     };
-
-    console.log("Payload:", payload); // Log the payload to verify data
-
+  
+    console.log("Payload:", payload); // Debug log for verification
+  
     try {
       const response = await axios.put("http://localhost:5000/api/time/update/time", payload);
-
+  
       if (response.status === 200) {
-        // Re-enable editing after saving
-        setIsEditable(true);
-        setStatus("available");
-
-        // Navigate to Completed page with startTime, endTime, duration, and blockId
+        // Update the status in the UI after saving
+        setStatus(updatedStatus);
+  
+        // Check if fields should remain editable after saving
+        checkEditable();
+  
+        // Navigate to Completed page with relevant data
         navigate("/Completed", { state: { startTime, endTime, duration, blockId } });
       }
     } catch (error) {
@@ -121,12 +140,13 @@ const TimeD = () => {
       setIsSaving(false);
     }
   };
+  
 
   return (
     <div className="timed-container flex flex-col items-center">
       <div className="selected-block mb-8">
         <h2 className="text-2xl font-bold">Selected Block</h2>
-        <div className="block-details border p-4 rounded-lg mt-4">
+        <div className={`block-details border p-4 rounded-lg mt-4 ${!isEditable ? 'border-black' : ''}`}>
           <div className="name flex flex-row items-center">
             <MdOutlineDoorSliding size={25} />
             <p className="pl-6">{classData?.classId || "N/A"}</p>
@@ -143,7 +163,7 @@ const TimeD = () => {
           </label>
           <select
             id="start-time"
-            className={`bg-gray-50 border ${!isEditable ? "border-black" : "border-gray-300"} text-sm rounded-lg block w-full p-2.5`}
+            className={`bg-gray-50 border ${!isEditable ? 'border-black' : 'border-gray-300'} text-sm rounded-lg block w-full p-2.5`}
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
             required
@@ -162,7 +182,7 @@ const TimeD = () => {
           </label>
           <select
             id="end-time"
-            className={`bg-gray-50 border ${!isEditable ? "border-black" : "border-gray-300"} text-sm rounded-lg block w-full p-2.5`}
+            className={`bg-gray-50 border ${!isEditable ? 'border-black' : 'border-gray-300'} text-sm rounded-lg block w-full p-2.5`}
             value={endTime}
             onChange={(e) => setEndTime(e.target.value)}
             required
@@ -182,7 +202,7 @@ const TimeD = () => {
           <button
             type="submit"
             className="bg-orange-600 text-white px-6 py-2 rounded-lg"
-            disabled={isSaving || !isEditable} // Disable if saving or not editable
+            disabled={isSaving} // Only disable when saving to prevent multiple clicks
           >
             {isSaving ? "Saving..." : "Set"}
           </button>
