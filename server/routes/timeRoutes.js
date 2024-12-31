@@ -2,19 +2,16 @@ import express from "express";
 import Block from "../modules/Block.js"; // Adjust the import to use the merged Block model
 
 const router = express.Router();
-
 router.put("/update/time", async (req, res) => {
   const { blockId, classId, startTime, endTime, duration } = req.body;
 
-  // console.log("Received payload at the server side:", req.body);
-
+  // Check for missing required fields
   if (!blockId || !classId || !startTime || !endTime || !duration) {
     return res.status(400).json({ message: "Missing required fields" });
   }
 
   try {
     const query = { blockId, "classes.classId": classId };
-    // console.log("Query:", query);
 
     const block = await Block.findOne(query, { blockId: 1, "classes.$": 1 });
 
@@ -24,8 +21,15 @@ router.put("/update/time", async (req, res) => {
         .json({ message: "Block or class not found on the server" });
     }
 
-    // console.log("Block found:", block);
+    // Determine the status based on the end time
+    const currentTime = new Date();
+    const endDate = new Date();
+    const [endHour, endMinute] = endTime.split(":").map(Number);
+    endDate.setHours(endHour, endMinute, 0, 0);
 
+    const updatedStatus = currentTime >= endDate ? "available" : "unavailable";
+
+    // Update the block with the new class data
     const updatedBlock = await Block.findOneAndUpdate(
       query,
       {
@@ -34,16 +38,15 @@ router.put("/update/time", async (req, res) => {
           "classes.$.endTime": endTime,
           "classes.$.duration": duration,
           "classes.$.lastUpdated": new Date(),
+          "classes.$.status": updatedStatus, // Update the status
         },
       },
       { new: true }
     );
 
     if (updatedBlock) {
-      console.log("block has been updated successsfully");
+      console.log("Block has been updated successfully");
     }
-
-    // console.log("Updated Block:", updatedBlock);
 
     res.json(updatedBlock);
   } catch (error) {
