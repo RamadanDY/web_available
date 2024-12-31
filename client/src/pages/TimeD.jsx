@@ -69,6 +69,8 @@ const TimeD = () => {
       classId: classId, // Pass the classId directly
     };
 
+    console.log("Payload:", payload); // Log the payload to verify data
+
     try {
       const response = await axios.put("http://localhost:5000/api/time/update/time", payload);
 

@@ -4,21 +4,20 @@ import { MdOutlineDoorSliding } from "react-icons/md";
 import { ImSpinner8 } from "react-icons/im";
 import "../App.css";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { io } from "socket.io-client";
 
 const BlockA = ({ blockName }) => {
   const [blockData, setBlockData] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { blockId, countdown } = location.state || {};
+
+  const [remainingTime, setRemainingTime] = useState(countdown || 0);
 
   useEffect(() => {
     const socket = io("http://localhost:5000");
-    
-    socket.on("connect", () => {
-      console.log("Connected to WebSocket server");
-    });
-
 
     socket.on("classStatusUpdated", (update) => {
       console.log("Real-time update received:", update);
@@ -56,6 +55,30 @@ const BlockA = ({ blockName }) => {
     fetchBlockData();
   }, [blockName]);
 
+  useEffect(() => {
+    if (remainingTime > 0) {
+      const timer = setInterval(() => {
+        setRemainingTime((prevTime) => {
+          console.log("Remaining Time:", prevTime - 1); // Log the countdown to the console
+          if (prevTime <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prevTime - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [remainingTime]);
+
+  const formatTime = (seconds) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hrs} hours ${mins} minutes ${secs} seconds`;
+  };
+
   const handleClassClick = (classItem) => {
     navigate(`/confirm/${classItem.classId}`, { state: { ...classItem, blockId: blockData.blockId } });
   };
@@ -80,6 +103,13 @@ const BlockA = ({ blockName }) => {
         <FaRegBuilding size={25} />
         <p className="text">{blockData.blockName}</p>
       </div>
+
+      {/* Countdown Timer */}
+      {remainingTime > 0 && (
+        <div className="countdown-timer mb-8">
+          <p className="text-lg font-medium">Time Remaining: {formatTime(remainingTime)}</p>
+        </div>
+      )}
 
       {/* Classes */}
       <div className="classes-wrapper flex flex-wrap justify-center gap-6">

@@ -30,32 +30,24 @@ const Completed = () => {
       targetTime = startDate;
     } else if (now >= startDate && now < endDate) {
       targetTime = endDate;
-    } else {
-      // If current time is after end time, stop countdown
-      return 'Time has passed';
     }
 
-    const interval = setInterval(() => {
-      const timeDiff = targetTime - new Date();
-      if (timeDiff <= 0) {
-        clearInterval(interval);
-        setCountdown('Time is up!');
-      } else {
-        const hours = Math.floor(timeDiff / (1000 * 60 * 60));
-        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
-        setCountdown(`${hours}h ${minutes}m ${seconds}s`);
-      }
-    }, 1000);
+    if (targetTime) {
+      const remainingTime = Math.max(0, Math.floor((targetTime - now) / 1000)); // in seconds
+      setCountdown(remainingTime);
+    }
   };
 
   useEffect(() => {
     calculateCountdown();
-    return () => clearInterval(); // Cleanup interval on component unmount
-  }, []);
+  }, [startTime, endTime]);
 
   const handleGoBack = () => {
     navigate('/');
+  };
+
+  const handleViewBlock = () => {
+    navigate('/blocka', { state: { blockId, countdown, duration } });
   };
 
   return (
@@ -70,9 +62,9 @@ const Completed = () => {
         </div>
 
         {/* Display Countdown */}
-        {countdown && (
+        {countdown !== null && (
           <div className="mb-4">
-            <p className="text-lg font-medium">Countdown: {countdown}</p>
+            <p className="text-lg font-medium">Countdown: {countdown} seconds</p>
           </div>
         )}
 
@@ -82,6 +74,12 @@ const Completed = () => {
             className="bg-blue-600 text-white px-6 py-2 rounded-lg"
           >
             Go Back to Home
+          </button>
+          <button
+            onClick={handleViewBlock}
+            className="bg-green-600 text-white px-6 py-2 rounded-lg ml-4"
+          >
+            View Block
           </button>
         </div>
       </div>
