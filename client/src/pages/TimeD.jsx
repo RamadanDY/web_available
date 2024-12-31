@@ -12,6 +12,8 @@ const TimeD = () => {
   const [endTime, setEndTime] = useState("07:00 AM");
   const [duration, setDuration] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isEditable, setIsEditable] = useState(true); // State to track if fields are editable
+  const [status, setStatus] = useState("available"); // State to track the status
   const navigate = useNavigate();
 
   // Function to calculate the duration
@@ -36,12 +38,42 @@ const TimeD = () => {
     const hours = Math.floor(diffMinutes / 60);
     const minutes = diffMinutes % 60;
 
-    setDuration(`${hours} hours ${minutes} minutes`);
+    setDuration(`${hours} hours ${minutes}`);
   };
 
   useEffect(() => {
     calculateDuration(startTime, endTime);
   }, [startTime, endTime]);
+
+  // Function to check if the fields should be editable
+  const checkEditable = () => {
+    const now = new Date();
+    const convertToDate = (timeStr) => {
+      const [time, modifier] = timeStr.split(" ");
+      let [hours, minutes] = time.split(":").map(Number);
+      if (modifier === "PM" && hours < 12) hours += 12;
+      if (modifier === "AM" && hours === 12) hours -= 12;
+      const date = new Date();
+      date.setHours(hours, minutes, 0, 0);
+      return date;
+    };
+
+    const endDate = convertToDate(endTime);
+
+    if (now >= endDate) {
+      setIsEditable(true);
+      setStatus("available");
+    } else {
+      setIsEditable(false);
+      setStatus("unavailable");
+    }
+  };
+
+  useEffect(() => {
+    checkEditable();
+    const interval = setInterval(checkEditable, 1000); // Check every second
+    return () => clearInterval(interval);
+  }, [endTime]);
 
   const generateTimeOptions = () => {
     const options = [];
@@ -75,6 +107,10 @@ const TimeD = () => {
       const response = await axios.put("http://localhost:5000/api/time/update/time", payload);
 
       if (response.status === 200) {
+        // Re-enable editing after saving
+        setIsEditable(true);
+        setStatus("available");
+
         // Navigate to Completed page with startTime, endTime, duration, and blockId
         navigate("/Completed", { state: { startTime, endTime, duration, blockId } });
       }
@@ -96,7 +132,7 @@ const TimeD = () => {
             <p className="pl-6">{classData?.classId || "N/A"}</p>
           </div>
           <p className="mt-2 bg-red-500">Block Name: {classData?.blockId || "N/A"}</p>
-          <p className="mt-2">Status: {classData?.status || "Unavailable"}</p>
+          <p className="mt-2">Status: {status}</p>
         </div>
       </div>
 
@@ -107,10 +143,11 @@ const TimeD = () => {
           </label>
           <select
             id="start-time"
-            className="bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5"
+            className={`bg-gray-50 border ${!isEditable ? "border-black" : "border-gray-300"} text-sm rounded-lg block w-full p-2.5`}
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
             required
+            disabled={!isEditable} // Disable if not editable
           >
             {generateTimeOptions().map((time, index) => (
               <option key={index} value={time}>
@@ -125,10 +162,11 @@ const TimeD = () => {
           </label>
           <select
             id="end-time"
-            className="bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5"
+            className={`bg-gray-50 border ${!isEditable ? "border-black" : "border-gray-300"} text-sm rounded-lg block w-full p-2.5`}
             value={endTime}
             onChange={(e) => setEndTime(e.target.value)}
             required
+            disabled={!isEditable} // Disable if not editable
           >
             {generateTimeOptions().map((time, index) => (
               <option key={index} value={time}>
@@ -144,7 +182,7 @@ const TimeD = () => {
           <button
             type="submit"
             className="bg-orange-600 text-white px-6 py-2 rounded-lg"
-            disabled={isSaving}
+            disabled={isSaving || !isEditable} // Disable if saving or not editable
           >
             {isSaving ? "Saving..." : "Set"}
           </button>
