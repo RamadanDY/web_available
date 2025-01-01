@@ -1,4 +1,4 @@
- import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import { MdOutlineDoorSliding } from "react-icons/md";
@@ -75,6 +75,25 @@ const TimeD = () => {
     return () => clearInterval(interval);
   }, [endTime]);
 
+  // Fetch stored data on load
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/time/${blockId}/${classId}`);
+        const { startTime, endTime, status } = response.data;
+        setStartTime(startTime);
+        setEndTime(endTime);
+        setStatus(status);
+        calculateDuration(startTime, endTime);
+        checkEditable();
+      } catch (error) {
+        console.error("Error fetching data:", error.response?.data || error.message);
+      }
+    };
+
+    fetchData();
+  }, [blockId, classId]);
+
   const generateTimeOptions = () => {
     const options = [];
     for (let h = 7; h < 19; h++) {
@@ -88,49 +107,31 @@ const TimeD = () => {
     }
     return options;
   };
+
   const handleSave = async (e) => {
     e.preventDefault();
     if (isSaving) return; // Prevent multiple save attempts
-  
+
     setIsSaving(true);
-  
-    // Determine the status based on the countdown
-    const now = new Date();
-    const convertToDate = (timeStr) => {
-      const [time, modifier] = timeStr.split(" ");
-      let [hours, minutes] = time.split(":").map(Number);
-      if (modifier === "PM" && hours < 12) hours += 12;
-      if (modifier === "AM" && hours === 12) hours -= 12;
-      const date = new Date();
-      date.setHours(hours, minutes, 0, 0);
-      return date;
-    };
-  
-    const endDate = convertToDate(endTime);
-    const updatedStatus = now >= endDate ? "available" : "unavailable";
-  
+
     const payload = {
       startTime,
       endTime,
       duration,
-      blockId, // Pass blockId from URL
-      classId, // Pass classId from URL
-      status: updatedStatus, // Add dynamically determined status
+      blockId: blockId, // Pass the blockId directly
+      classId: classId, // Pass the classId directly
     };
-  
-    console.log("Payload:", payload); // Debug log for verification
-  
+
+    console.log("Payload:", payload); // Log the payload to verify data
+
     try {
       const response = await axios.put("http://localhost:5000/api/time/update/time", payload);
-  
+
       if (response.status === 200) {
-        // Update the status in the UI after saving
-        setStatus(updatedStatus);
-  
-        // Check if fields should remain editable after saving
+        // Check if the fields should be editable after saving
         checkEditable();
-  
-        // Navigate to Completed page with relevant data
+
+        // Navigate to Completed page with startTime, endTime, duration, and blockId
         navigate("/Completed", { state: { startTime, endTime, duration, blockId } });
       }
     } catch (error) {
@@ -140,7 +141,6 @@ const TimeD = () => {
       setIsSaving(false);
     }
   };
-  
 
   return (
     <div className="timed-container flex flex-col items-center">
