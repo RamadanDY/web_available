@@ -119,7 +119,7 @@ const BlockA = ({ blockName }) => {
               </div>
               {countdown > 0 ? (
                 <div className="countdown-timer mb-8">
-                  <p className="text-lg font-medium">Time Remaining: {formatTime(countdown)}</p>
+                  <p className="text-lg font-medium">Time Remaining {formatTime(countdown)}</p>
                 </div>
               ) : (
                 <div className="countdown-timer mb-8">
