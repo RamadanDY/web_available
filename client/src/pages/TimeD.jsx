@@ -14,6 +14,7 @@ const TimeD = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [isEditable, setIsEditable] = useState(true); // State to track if fields are editable
   const [status, setStatus] = useState("available"); // State to track the status
+  const [remainingTime, setRemainingTime] = useState(0); // State to track remaining time
   const navigate = useNavigate();
 
   // Function to calculate the duration
@@ -45,6 +46,24 @@ const TimeD = () => {
     calculateDuration(startTime, endTime);
   }, [startTime, endTime]);
 
+  // Function to calculate remaining time
+  const calculateRemainingTime = (endTime) => {
+    const now = new Date();
+    const convertToDate = (timeStr) => {
+      const [time, modifier] = timeStr.split(" ");
+      let [hours, minutes] = time.split(":").map(Number);
+      if (modifier === "PM" && hours < 12) hours += 12;
+      if (modifier === "AM" && hours === 12) hours -= 12;
+      const date = new Date();
+      date.setHours(hours, minutes, 0, 0);
+      return date;
+    };
+
+    const endDate = convertToDate(endTime);
+    const remainingTimeInSeconds = Math.max(0, Math.floor((endDate - now) / 1000));
+    setRemainingTime(remainingTimeInSeconds);
+  };
+
   // Function to check if the fields should be editable
   const checkEditable = () => {
     const now = new Date();
@@ -66,6 +85,7 @@ const TimeD = () => {
     } else {
       setIsEditable(false);
       setStatus("unavailable");
+      calculateRemainingTime(endTime); // Calculate remaining time if unavailable
     }
   };
 
@@ -142,6 +162,14 @@ const TimeD = () => {
     }
   };
 
+  // Function to format time as HH:MM:SS
+  const formatTime = (timeInSeconds) => {
+    const hours = Math.floor(timeInSeconds / 3600);
+    const minutes = Math.floor((timeInSeconds % 3600) / 60);
+    const seconds = timeInSeconds % 60;
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  };
+
   return (
     <div className="timed-container flex flex-col items-center">
       <div className="selected-block mb-8">
@@ -153,6 +181,11 @@ const TimeD = () => {
           </div>
           <p className="mt-2 bg-red-500">Block Name: {classData?.blockId || "N/A"}</p>
           <p className="mt-2">Status: {status}</p>
+          {!isEditable && (
+            <div className="countdown-timer mt-4">
+              <p className="text-lg font-medium">Time Remaining: {formatTime(remainingTime)}</p>
+            </div>
+          )}
         </div>
       </div>
 

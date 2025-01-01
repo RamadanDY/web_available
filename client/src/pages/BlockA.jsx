@@ -12,13 +12,26 @@ const BlockA = ({ blockName }) => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const { blockId, countdown } = location.state || {};
+  const { blockId } = location.state || {};
 
-  const [remainingTime, setRemainingTime] = useState(countdown || 0);
+  const [classCountdowns, setClassCountdowns] = useState({});
+
+  // Function to format time as HH:MM:SS
+  const formatTime = (timeInSeconds) => {
+    const hours = Math.floor(timeInSeconds / 3600);
+    const minutes = Math.floor((timeInSeconds % 3600) / 60);
+    const seconds = timeInSeconds % 60;
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  };
 
   useEffect(() => {
     const socket = io("http://localhost:5000");
 
+    socket.on("connect", () => {
+      console.log("Connected to WebSocket server");
+    });
+
+    // Handle real-time updates for class status and remainingTime
     socket.on("classStatusUpdated", (update) => {
       console.log("Real-time update received:", update);
       setBlockData((prevData) => {
@@ -33,6 +46,13 @@ const BlockA = ({ blockName }) => {
 
         return { ...prevData, classes: updatedClasses };
       });
+    });
+
+    socket.on("updateTime", (data) => {
+      setClassCountdowns((prevCountdowns) => ({
+        ...prevCountdowns,
+        [data.classId]: data.remainingTime,
+      }));
     });
 
     return () => {
@@ -54,30 +74,6 @@ const BlockA = ({ blockName }) => {
 
     fetchBlockData();
   }, [blockName]);
-
-  useEffect(() => {
-    if (remainingTime > 0) {
-      const timer = setInterval(() => {
-        setRemainingTime((prevTime) => {
-          console.log("Remaining Time:", prevTime - 1); // Log the countdown to the console
-          if (prevTime <= 1) {
-            clearInterval(timer);
-            return 0;
-          }
-          return prevTime - 1;
-        });
-      }, 1000);
-
-      return () => clearInterval(timer);
-    }
-  }, [remainingTime]);
-
-  const formatTime = (seconds) => {
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${hrs} hours ${mins} minutes ${secs} seconds`;
-  };
 
   const handleClassClick = (classItem) => {
     navigate(`/confirm/${classItem.classId}`, { state: { ...classItem, blockId: blockData.blockId } });
@@ -104,47 +100,51 @@ const BlockA = ({ blockName }) => {
         <p className="text">{blockData.blockName}</p>
       </div>
 
-      {/* Countdown Timer */}
-      {remainingTime > 0 && (
-        <div className="countdown-timer mb-8">
-          <p className="text-lg font-medium">Time Remaining: {formatTime(remainingTime)}</p>
-        </div>
-      )}
-
       {/* Classes */}
       <div className="classes-wrapper flex flex-wrap justify-center gap-6">
-        {blockData.classes.map((classItem) => (
-          <div
-            key={classItem.classId}
-            className="classes1 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 border-red-800 gap-4 rounded-2xl flex flex-col justify-between border px-14 py-4 w-fit m-2 text-center relative"
-            onClick={() => handleClassClick(classItem)}
-          >
-            <div className="name flex flex-row items-center h-2/3">
-              <MdOutlineDoorSliding size={25} />
-              <p className="pl-6">{classItem.classId}</p>
-            </div>
-            <div className="duration">
-              <p className="dur bg-pink-500">{classItem.duration}</p>
-            </div>
-
-            <span
-              className={`inline-flex items-center ${
-                classItem.status === "available"
-                  ? "bg-green-100 text-green-800"
-                  : "bg-red-100 text-red-800"
-              } text-xs font-medium px-2.5 py-0.5 rounded-full`}
+        {blockData.classes.map((classItem) => {
+          const countdown = classCountdowns[classItem.classId] || 0;
+          return (
+            <div
+              key={classItem.classId}
+              className="classes1 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 border-red-800 gap-4 rounded-2xl flex flex-col justify-between border px-14 py-4 w-fit m-2 text-center relative"
+              onClick={() => handleClassClick(classItem)}
             >
+              <div className="name flex flex-row items-center h-2/3">
+                <MdOutlineDoorSliding size={25} />
+                <p className="pl-6">{classItem.classId}</p>
+              </div>
+              <div className="duration">
+                <p className="dur bg-pink-500">{classItem.duration}</p>
+              </div>
+              {countdown > 0 ? (
+                <div className="countdown-timer mb-8">
+                  <p className="text-lg font-medium">Time Remaining: {formatTime(countdown)}</p>
+                </div>
+              ) : (
+                <div className="countdown-timer mb-8">
+                  <p className="text-lg font-medium">Countdown not started</p>
+                </div>
+              )}
               <span
-                className={`w-2 h-2 me-1 rounded-full ${
+                className={`inline-flex items-center ${
                   classItem.status === "available"
-                    ? "bg-green-500"
-                    : "bg-red-500"
-                }`}
-              ></span>
-              {classItem.status}
-            </span>
-          </div>
-        ))}
+                    ? "bg-green-100 text-green-800"
+                    : "bg-red-100 text-red-800"
+                } text-xs font-medium px-2.5 py-0.5 rounded-full`}
+              >
+                <span
+                  className={`w-2 h-2 me-1 rounded-full ${
+                    classItem.status === "available"
+                      ? "bg-green-500"
+                      : "bg-red-500"
+                  }`}
+                ></span>
+                {classItem.status}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

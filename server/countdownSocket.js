@@ -1,4 +1,3 @@
-// sockets/countdownSocket.js
 import moment from "moment";
 import Block from "./modules/Block.js";
 
@@ -62,8 +61,12 @@ const countdownSocket = (io) => {
         }
       } catch (error) {
         console.error("Error handling joinClass:", error);
-        socket.emit("error", { message: "Server error", error: error.message });
+        socket.emit("error", { message: "An error occurred" });
       }
+    });
+
+    socket.on("disconnect", () => {
+      console.log("A user disconnected");
     });
   });
 };
