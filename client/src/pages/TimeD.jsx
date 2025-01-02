@@ -12,9 +12,7 @@ const TimeD = () => {
   const [endTime, setEndTime] = useState("07:00 AM");
   const [duration, setDuration] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [isEditable, setIsEditable] = useState(true); // State to track if fields are editable
-  const [status, setStatus] = useState("available"); // State to track the status
-  const [remainingTime, setRemainingTime] = useState(0); // State to track remaining time
+
   const navigate = useNavigate();
 
   // Function to calculate the duration
@@ -46,69 +44,15 @@ const TimeD = () => {
     calculateDuration(startTime, endTime);
   }, [startTime, endTime]);
 
-  // Function to calculate remaining time
-  const calculateRemainingTime = (endTime) => {
-    const now = new Date();
-    const convertToDate = (timeStr) => {
-      const [time, modifier] = timeStr.split(" ");
-      let [hours, minutes] = time.split(":").map(Number);
-      if (modifier === "PM" && hours < 12) hours += 12;
-      if (modifier === "AM" && hours === 12) hours -= 12;
-      const date = new Date();
-      date.setHours(hours, minutes, 0, 0);
-      return date;
-    };
-
-    const endDate = convertToDate(endTime);
-    const remainingTimeInSeconds = Math.max(0, Math.floor((endDate - now) / 1000));
-    setRemainingTime(remainingTimeInSeconds);
-  };
-
-  // Function to check if the fields should be editable
-  const checkEditable = () => {
-    const now = new Date();
-    const convertToDate = (timeStr) => {
-      const [time, modifier] = timeStr.split(" ");
-      let [hours, minutes] = time.split(":").map(Number);
-      if (modifier === "PM" && hours < 12) hours += 12;
-      if (modifier === "AM" && hours === 12) hours -= 12;
-      const date = new Date();
-      date.setHours(hours, minutes, 0, 0);
-      return date;
-    };
-
-    const endDate = convertToDate(endTime);
-
-    if (now >= endDate) {
-      setIsEditable(true);
-      setStatus("available");
-    } else {
-      setIsEditable(false);
-      setStatus("unavailable");
-      calculateRemainingTime(endTime); // Calculate remaining time if unavailable
-    }
-  };
-
-  useEffect(() => {
-    checkEditable();
-    const interval = setInterval(() => {
-      checkEditable();
-      calculateRemainingTime(endTime);
-    }, 1000); // Check every second
-    return () => clearInterval(interval);
-  }, [endTime]);
-
   // Fetch stored data on load
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/time/${blockId}/${classId}`);
-        const { startTime, endTime, status } = response.data;
+        const { startTime, endTime } = response.data;
         setStartTime(startTime);
         setEndTime(endTime);
-        setStatus(status);
         calculateDuration(startTime, endTime);
-        checkEditable();
       } catch (error) {
         console.error("Error fetching data:", error.response?.data || error.message);
       }
@@ -151,9 +95,6 @@ const TimeD = () => {
       const response = await axios.put("http://localhost:5000/api/time/update/time", payload);
 
       if (response.status === 200) {
-        // Check if the fields should be editable after saving
-        checkEditable();
-
         // Navigate to Completed page with startTime, endTime, duration, and blockId
         navigate("/Completed", { state: { startTime, endTime, duration, blockId } });
       }
@@ -165,96 +106,69 @@ const TimeD = () => {
     }
   };
 
-  // Function to format time as HH:MM:SS
-  const formatTime = (timeInSeconds) => {
-    const hours = Math.floor(timeInSeconds / 3600);
-    const minutes = Math.floor((timeInSeconds % 3600) / 60);
-    const seconds = timeInSeconds % 60;
-    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-  };
-
   return (
     <div className="timed-container flex flex-col items-center">
       <div className="selected-block mb-8">
         <h2 className="text-2xl font-bold">Selected Block</h2>
-        <div className={`block-details border p-4 rounded-lg mt-4 ${!isEditable ? 'border-black' : ''}`}>
+        <div className="block-details border p-4 rounded-lg mt-4">
           <div className="name flex flex-row items-center">
             <MdOutlineDoorSliding size={25} />
             <p className="pl-6">{classData?.classId || "N/A"}</p>
           </div>
-          <p className="mt-2 bg-red-500">Block Name: {classData?.blockId || "N/A"}</p>
-          <p className="mt-2">Status: {status}</p>
-          {!isEditable && (
-            <div className="countdown-timer mt-4">
-              <p className="text-lg font-medium">Time Remaining: {formatTime(remainingTime)}</p>
-            </div>
-          )}
+          <p className="mt-2">Block Name: {classData?.blockId || "N/A"}</p>
         </div>
       </div>
 
-      {!isEditable ? (
-        <div className="flex justify-center mt-4">
-          <button
-            onClick={() => navigate("/")}
-            className="bg-orange-600 text-white px-6 py-2 rounded-lg"
+      <form onSubmit={handleSave} className="max-w-[16rem] mx-auto grid grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="start-time" className="block mb-2 text-sm font-medium">
+            Start time:
+          </label>
+          <select
+            id="start-time"
+            className="bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5"
+            value={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
+            required
           >
-            Go Back Home
+            {generateTimeOptions().map((time, index) => (
+              <option key={index} value={time}>
+                {time}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label htmlFor="end-time" className="block mb-2 text-sm font-medium">
+            End time:
+          </label>
+          <select
+            id="end-time"
+            className="bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5"
+            value={endTime}
+            onChange={(e) => setEndTime(e.target.value)}
+            required
+          >
+            {generateTimeOptions().map((time, index) => (
+              <option key={index} value={time}>
+                {time}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="col-span-2 mt-4">
+          {duration && <p className="text-lg font-medium">Duration: {duration}</p>}
+        </div>
+        <div className="col-span-2 flex justify-center mt-4">
+          <button
+            type="submit"
+            className="bg-orange-600 text-white px-6 py-2 rounded-lg"
+            disabled={isSaving} // Only disable when saving to prevent multiple clicks
+          >
+            {isSaving ? "Saving..." : "Set"}
           </button>
         </div>
-      ) : (
-        <form onSubmit={handleSave} className="max-w-[16rem] mx-auto grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="start-time" className="block mb-2 text-sm font-medium">
-              Start time:
-            </label>
-            <select
-              id="start-time"
-              className={`bg-gray-50 border ${!isEditable ? 'border-black' : 'border-gray-300'} text-sm rounded-lg block w-full p-2.5`}
-              value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
-              required
-              disabled={!isEditable} // Disable if not editable
-            >
-              {generateTimeOptions().map((time, index) => (
-                <option key={index} value={time}>
-                  {time}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="end-time" className="block mb-2 text-sm font-medium">
-              End time:
-            </label>
-            <select
-              id="end-time"
-              className={`bg-gray-50 border ${!isEditable ? 'border-black' : 'border-gray-300'} text-sm rounded-lg block w-full p-2.5`}
-              value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
-              required
-              disabled={!isEditable} // Disable if not editable
-            >
-              {generateTimeOptions().map((time, index) => (
-                <option key={index} value={time}>
-                  {time}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="col-span-2 mt-4">
-            {duration && <p className="text-lg font-medium">Duration: {duration}</p>}
-          </div>
-          <div className="col-span-2 flex justify-center mt-4">
-            <button
-              type="submit"
-              className="bg-orange-600 text-white px-6 py-2 rounded-lg"
-              disabled={isSaving} // Only disable when saving to prevent multiple clicks
-            >
-              {isSaving ? "Saving..." : "Set"}
-            </button>
-          </div>
-        </form>
-      )}
+      </form>
     </div>
   );
 };
