@@ -176,7 +176,7 @@ const TimeD = () => {
   return (
     <div className="timed-container flex flex-col items-center">
       <div className="selected-block mb-8">
-        <h2 className="text-2xl font-bold">Selected Block</h2>
+        <h2 className="text-2xl font-bold">Select Block</h2>
         <div className={`block-details border p-4 rounded-lg mt-4 ${!isEditable ? 'border-black' : ''}`}>
           <div className="name flex flex-row items-center">
             <MdOutlineDoorSliding size={25} />
