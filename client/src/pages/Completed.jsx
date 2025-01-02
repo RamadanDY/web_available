@@ -64,7 +64,7 @@ const Completed = () => {
         {/* Display Countdown */}
         {countdown !== null && (
           <div className="mb-4">
-            <p className="text-lg font-medium">Countdown: {countdown} seconds</p>
+            <p className="text-lg font-medium">Countdown for this class: {countdown} seconds</p>
           </div>
         )}
 

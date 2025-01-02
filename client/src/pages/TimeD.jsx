@@ -65,7 +65,7 @@ const TimeD = () => {
   };
 
   // Function to check if the fields should be editable
-  const checkEditable = async () => {
+  const checkEditable = () => {
     const now = new Date();
     const convertToDate = (timeStr) => {
       const [time, modifier] = timeStr.split(" ");
@@ -82,25 +82,10 @@ const TimeD = () => {
     if (now >= endDate) {
       setIsEditable(true);
       setStatus("available");
-      await updateStatus("available");
     } else {
       setIsEditable(false);
       setStatus("unavailable");
       calculateRemainingTime(endTime); // Calculate remaining time if unavailable
-      await updateStatus("unavailable");
-    }
-  };
-
-  // Function to update the class status in the database
-  const updateStatus = async (newStatus) => {
-    try {
-      await axios.put(`http://localhost:5000/api/time/update/status`, {
-        blockId,
-        classId,
-        status: newStatus,
-      });
-    } catch (error) {
-      console.error("Error updating status:", error.response?.data || error.message);
     }
   };
 
@@ -207,58 +192,69 @@ const TimeD = () => {
         </div>
       </div>
 
-      <form onSubmit={handleSave} className="max-w-[16rem] mx-auto grid grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="start-time" className="block mb-2 text-sm font-medium">
-            Start time:
-          </label>
-          <select
-            id="start-time"
-            className={`bg-gray-50 border ${!isEditable ? 'border-black' : 'border-gray-300'} text-sm rounded-lg block w-full p-2.5`}
-            value={startTime}
-            onChange={(e) => setStartTime(e.target.value)}
-            required
-            disabled={!isEditable} // Disable if not editable
-          >
-            {generateTimeOptions().map((time, index) => (
-              <option key={index} value={time}>
-                {time}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="end-time" className="block mb-2 text-sm font-medium">
-            End time:
-          </label>
-          <select
-            id="end-time"
-            className={`bg-gray-50 border ${!isEditable ? 'border-black' : 'border-gray-300'} text-sm rounded-lg block w-full p-2.5`}
-            value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
-            required
-            disabled={!isEditable} // Disable if not editable
-          >
-            {generateTimeOptions().map((time, index) => (
-              <option key={index} value={time}>
-                {time}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="col-span-2 mt-4">
-          {duration && <p className="text-lg font-medium">Duration: {duration}</p>}
-        </div>
-        <div className="col-span-2 flex justify-center mt-4">
+      {!isEditable ? (
+        <div className="flex justify-center mt-4">
           <button
-            type="submit"
+            onClick={() => navigate("/")}
             className="bg-orange-600 text-white px-6 py-2 rounded-lg"
-            disabled={isSaving} // Only disable when saving to prevent multiple clicks
           >
-            {isSaving ? "Saving..." : "Set"}
+            Go Back Home
           </button>
         </div>
-      </form>
+      ) : (
+        <form onSubmit={handleSave} className="max-w-[16rem] mx-auto grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="start-time" className="block mb-2 text-sm font-medium">
+              Start time:
+            </label>
+            <select
+              id="start-time"
+              className={`bg-gray-50 border ${!isEditable ? 'border-black' : 'border-gray-300'} text-sm rounded-lg block w-full p-2.5`}
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+              required
+              disabled={!isEditable} // Disable if not editable
+            >
+              {generateTimeOptions().map((time, index) => (
+                <option key={index} value={time}>
+                  {time}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="end-time" className="block mb-2 text-sm font-medium">
+              End time:
+            </label>
+            <select
+              id="end-time"
+              className={`bg-gray-50 border ${!isEditable ? 'border-black' : 'border-gray-300'} text-sm rounded-lg block w-full p-2.5`}
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+              required
+              disabled={!isEditable} // Disable if not editable
+            >
+              {generateTimeOptions().map((time, index) => (
+                <option key={index} value={time}>
+                  {time}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="col-span-2 mt-4">
+            {duration && <p className="text-lg font-medium">Duration: {duration}</p>}
+          </div>
+          <div className="col-span-2 flex justify-center mt-4">
+            <button
+              type="submit"
+              className="bg-orange-600 text-white px-6 py-2 rounded-lg"
+              disabled={isSaving} // Only disable when saving to prevent multiple clicks
+            >
+              {isSaving ? "Saving..." : "Set"}
+            </button>
+          </div>
+        </form>
+      )}
     </div>
   );
 };
