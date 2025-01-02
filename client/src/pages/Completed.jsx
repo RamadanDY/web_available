@@ -39,7 +39,16 @@ const Completed = () => {
   };
 
   useEffect(() => {
+    // Initialize countdown
     calculateCountdown();
+
+    // Set interval to update countdown every second
+    const interval = setInterval(() => {
+      calculateCountdown();
+    }, 1000);
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(interval);
   }, [startTime, endTime]);
 
   const handleGoBack = () => {
@@ -88,3 +97,4 @@ const Completed = () => {
 };
 
 export default Completed;
+
