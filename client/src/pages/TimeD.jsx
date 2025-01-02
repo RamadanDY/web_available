@@ -91,7 +91,10 @@ const TimeD = () => {
 
   useEffect(() => {
     checkEditable();
-    const interval = setInterval(checkEditable, 1000); // Check every second
+    const interval = setInterval(() => {
+      checkEditable();
+      calculateRemainingTime(endTime);
+    }, 1000); // Check every second
     return () => clearInterval(interval);
   }, [endTime]);
 
