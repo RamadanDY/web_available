@@ -65,7 +65,7 @@ const TimeD = () => {
   };
 
   // Function to check if the fields should be editable
-  const checkEditable = () => {
+  const checkEditable = async () => {
     const now = new Date();
     const convertToDate = (timeStr) => {
       const [time, modifier] = timeStr.split(" ");
@@ -82,10 +82,25 @@ const TimeD = () => {
     if (now >= endDate) {
       setIsEditable(true);
       setStatus("available");
+      await updateStatus("available");
     } else {
       setIsEditable(false);
       setStatus("unavailable");
       calculateRemainingTime(endTime); // Calculate remaining time if unavailable
+      await updateStatus("unavailable");
+    }
+  };
+
+  // Function to update the class status in the database
+  const updateStatus = async (newStatus) => {
+    try {
+      await axios.put(`http://localhost:5000/api/time/update/status`, {
+        blockId,
+        classId,
+        status: newStatus,
+      });
+    } catch (error) {
+      console.error("Error updating status:", error.response?.data || error.message);
     }
   };
 
@@ -176,7 +191,7 @@ const TimeD = () => {
   return (
     <div className="timed-container flex flex-col items-center">
       <div className="selected-block mb-8">
-        <h2 className="text-2xl font-bold">Select Block</h2>
+        <h2 className="text-2xl font-bold">Selected Block</h2>
         <div className={`block-details border p-4 rounded-lg mt-4 ${!isEditable ? 'border-black' : ''}`}>
           <div className="name flex flex-row items-center">
             <MdOutlineDoorSliding size={25} />

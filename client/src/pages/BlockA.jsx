@@ -53,12 +53,26 @@ const BlockA = ({ blockName }) => {
         ...prevCountdowns,
         [data.classId]: data.remainingTime,
       }));
+      updateClassStatus(data.classId, data.remainingTime);
     });
 
     return () => {
       socket.disconnect();
     };
   }, []);
+
+  const updateClassStatus = async (classId, remainingTime) => {
+    const newStatus = remainingTime > 0 ? "unavailable" : "available";
+    try {
+      await axios.put(`http://localhost:5000/api/time/update/status`, {
+        blockId,
+        classId,
+        status: newStatus,
+      });
+    } catch (error) {
+      console.error("Error updating status:", error.response?.data || error.message);
+    }
+  };
 
   useEffect(() => {
     const fetchBlockData = async () => {
