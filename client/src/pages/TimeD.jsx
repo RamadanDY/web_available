@@ -149,7 +149,7 @@ const TimeD = () => {
     console.log("Payload:", payload); // Log the payload to verify data
 
     try {
-      const response = await axios.put("http://localhost:5000/api/time/update/time", payload);
+      const response = await axios.put("http://localhost:5000/api/time/time/update/time", payload);
 
       if (response.status === 200) {
         // Check if the fields should be editable after saving

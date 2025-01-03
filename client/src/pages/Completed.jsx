@@ -1,62 +1,62 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Completed = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { startTime, endTime, duration, blockId } = location.state || {};
+  const { endTime, duration, blockId } = location.state || {};
 
   const [countdown, setCountdown] = useState(null);
 
   // Helper function to convert time string to Date object
   const convertToDate = (timeStr) => {
-    const [time, modifier] = timeStr.split(' ');
-    let [hours, minutes] = time.split(':').map(Number);
-    if (modifier === 'PM' && hours < 12) hours += 12;
-    if (modifier === 'AM' && hours === 12) hours -= 12;
+    const [time, modifier] = timeStr.split(" ");
+    let [hours, minutes] = time.split(":").map(Number);
+    if (modifier === "PM" && hours < 12) hours += 12;
+    if (modifier === "AM" && hours === 12) hours -= 12;
     const now = new Date();
-    const date = new Date(now.setHours(hours, minutes, 0, 0)); // Set hours and minutes
+    const date = new Date(now);
+    date.setHours(hours, minutes, 0, 0); // Set hours, minutes, and reset seconds
     return date;
   };
 
-  // Calculate the time difference and start the countdown
-  const calculateCountdown = () => {
-    const now = new Date();
-    const startDate = convertToDate(startTime);
-    const endDate = convertToDate(endTime);
-
-    let targetTime = null;
-    if (now < startDate) {
-      targetTime = startDate;
-    } else if (now >= startDate && now < endDate) {
-      targetTime = endDate;
-    }
-
-    if (targetTime) {
-      const remainingTime = Math.max(0, Math.floor((targetTime - now) / 1000)); // in seconds
-      setCountdown(remainingTime);
-    }
-  };
-
   useEffect(() => {
-    // Initialize countdown
-    calculateCountdown();
+    if (!endTime) return;
 
-    // Set interval to update countdown every second
+    // Calculate target time (endTime)
+    const targetTime = convertToDate(endTime);
+
+    const updateCountdown = () => {
+      const now = new Date();
+      const remainingTime = Math.max(0, Math.floor((targetTime - now) / 1000)); // Remaining time in seconds
+      setCountdown(remainingTime);
+    };
+
+    updateCountdown(); // Initial calculation
+
+    // Update countdown every second
     const interval = setInterval(() => {
-      calculateCountdown();
+      updateCountdown();
     }, 1000);
 
     // Cleanup interval on component unmount
     return () => clearInterval(interval);
-  }, [startTime, endTime]);
+  }, [endTime]);
 
   const handleGoBack = () => {
-    navigate('/');
+    navigate("/");
   };
 
   const handleViewBlock = () => {
-    navigate('/blocka', { state: { blockId, countdown, duration } });
+    navigate("/blocka", { state: { blockId, countdown, duration } });
+  };
+
+  // Format countdown as HH:MM:SS
+  const formatTime = (seconds) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   };
 
   return (
@@ -65,15 +65,16 @@ const Completed = () => {
         <h2 className="text-2xl font-bold text-center mb-4">Action Completed Successfully!</h2>
         <div className="mb-4">
           <p className="text-lg font-medium">Block ID: {blockId}</p>
-          <p className="text-lg font-medium">Start Time: {startTime}</p>
-          <p className="text-lg font-medium">End Time: {endTime}</p>
-          <p className="text-lg font-medium">Duration: {duration}</p>
+          <p className="text-lg font-medium">End Time: {endTime || "N/A"}</p>
+          <p className="text-lg font-medium">Duration: {duration || "N/A"}</p>
         </div>
 
         {/* Display Countdown */}
         {countdown !== null && (
           <div className="mb-4">
-            <p className="text-lg font-medium">Countdown for this class: {countdown} seconds</p>
+            <p className="text-lg font-medium">
+              Countdown until the end: {formatTime(countdown)}
+            </p>
           </div>
         )}
 
@@ -97,4 +98,3 @@ const Completed = () => {
 };
 
 export default Completed;
-

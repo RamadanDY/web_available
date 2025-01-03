@@ -1,75 +1,56 @@
 import express from "express";
-import Block from "../modules/Block.js"; // Adjust the import to use the merged Block model
+import Block from "../modules/Block.js";
 
 const router = express.Router();
 
-router.put("/update/time", async (req, res) => {
-  const { blockId, classId, startTime, endTime, duration } = req.body;
-
-  // Check for missing required fields
-  if (!blockId || !classId || !startTime || !endTime || !duration) {
-    return res.status(400).json({ message: "Missing required fields" });
-  }
+// Route to get block data by block name
+router.get("/:blockName", async (req, res) => {
+  const { blockName } = req.params;
 
   try {
-    const query = { blockId, "classes.classId": classId };
-
-    const block = await Block.findOne(query, { blockId: 1, "classes.$": 1 });
-
+    const block = await Block.findOne({ blockName });
     if (!block) {
-      return res
-        .status(404)
-        .json({ message: "Block or class not found on the server" });
+      return res.status(404).json({ message: "Block not found" });
+    }
+    res.json(block);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+// Route to get class data by blockId and classId
+router.get("/time/:blockId/:classId", async (req, res) => {
+  const { blockId, classId } = req.params;
+
+  try {
+    // Find the block by its blockId
+    const block = await Block.findOne({ blockId });
+    if (!block) {
+      return res.status(404).json({ message: "Block not found" });
     }
 
-    // Parse the end time
-    const convertToDate = (timeStr) => {
-      const [time, modifier] = timeStr.split(" ");
-      let [hours, minutes] = time.split(":").map(Number);
-      if (modifier === "PM" && hours < 12) hours += 12;
-      if (modifier === "AM" && hours === 12) hours = 0;
-      const date = new Date();
-      date.setHours(hours, minutes, 0, 0);
-      return date;
-    };
+    // Find the class in the block
+    const classItem = block.classes.find((cls) => cls.classId === classId);
+    if (!classItem) {
+      return res.status(404).json({ message: "Class not found" });
+    }
 
-    const endDate = convertToDate(endTime);
-    const currentTime = new Date();
-
-    // Determine the status
-    const updatedStatus = currentTime >= endDate ? "available" : "unavailable";
-
-    // Calculate remaining time in seconds
+    // Calculate remaining time
+    const now = new Date();
+    const endDate = new Date(now);
+    const [endHours, endMinutes] = classItem.endTime.split(":").map(Number);
+    endDate.setHours(endHours, endMinutes, 0, 0);
     const remainingTimeInSeconds = Math.max(
       0,
-      Math.floor((endDate - currentTime) / 1000)
+      Math.floor((endDate - now) / 1000)
     );
 
-    // Update the block with the new class data
-    const updatedBlock = await Block.findOneAndUpdate(
-      query,
-      {
-        $set: {
-          "classes.$.startTime": startTime,
-          "classes.$.endTime": endTime,
-          "classes.$.duration": duration,
-          "classes.$.lastUpdated": new Date(),
-          "classes.$.status": updatedStatus,
-        },
-      },
-      { new: true }
-    );
-
-    if (updatedBlock) {
-      console.log("Block has been updated successfully");
-    }
-
+    // Return the class data with the remaining countdown time
     res.json({
-      updatedBlock,
-      remainingTime: remainingTimeInSeconds, // Return the remaining time in seconds
+      ...classItem.toObject(),
+      remainingTime: remainingTimeInSeconds,
     });
   } catch (error) {
-    console.error("Error updating block:", error.message);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
